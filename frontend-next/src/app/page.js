@@ -31,17 +31,17 @@ export default function Home() {
                 onClick={() => setView("user")}
                 className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${view === "user" ? "bg-brand-gold text-brand-midnight shadow-lg" : "text-brand-muted hover:text-white"}`}
               >
-                Family Member
+                Anggota Keluarga
               </button>
               <button 
                 onClick={() => setView("admin")}
                 className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${view === "admin" ? "bg-brand-gold text-brand-midnight shadow-lg" : "text-brand-muted hover:text-white"}`}
               >
-                Wealth Manager
+                Manajer Keuangan
               </button>
             </div>
             <button className="bg-white/5 hover:bg-white/10 text-white border border-white/10 px-6 py-2.5 rounded text-sm font-medium transition-colors">
-              Sign In
+              Masuk
             </button>
           </div>
         </div>
@@ -52,23 +52,23 @@ export default function Home() {
         <section className="flex flex-col items-center text-center mt-8 animate-fade-in-up">
           <h1 className="font-display text-5xl md:text-7xl font-bold tracking-tight mb-6 text-white max-w-4xl leading-tight">
             {view === "user" ? (
-              <>Protect the family legacy. <br/><span className="text-gold-gradient italic">One envelope at a time.</span></>
+              <>Lindungi masa depan finansial keluarga. <br/><span className="text-gold-gradient italic">Satu amplop setiap waktu.</span></>
             ) : (
-              <>Command the ledger. <br/><span className="text-gold-gradient italic">Absolute financial truth.</span></>
+              <>Kendali penuh atas arus kas. <br/><span className="text-gold-gradient italic">Akurasi finansial mutlak.</span></>
             )}
           </h1>
           <p className="text-lg md:text-xl max-w-2xl mb-12 leading-relaxed opacity-90">
             {view === "user" 
-              ? "Allocate funds into digital envelopes, track shared expenses instantly, and view personalized insights that guide your household toward financial milestones."
-              : "Orchestrate your family's cash flow with atomic precision. Connect physical IoT trackers, manage participant roles, and maintain an immutable audit trail."}
+              ? "Alokasikan dana ke dalam amplop digital, lacak pengeluaran bersama secara instan, dan pantau wawasan personal yang memandu keluarga Anda mencapai target keuangan."
+              : "Orkestrasikan arus kas keluarga dengan presisi tinggi. Hubungkan dengan webhook perangkat IoT fisik, kelola akses setiap anggota, dan jaga keamanan log aktivitas yang tidak bisa dimanipulasi."}
           </p>
           
           <div className="flex flex-col sm:flex-row gap-5 mb-24">
             <button className="bg-brand-gold hover:bg-brand-gold-muted text-brand-midnight px-8 py-3.5 rounded font-medium transition-all transform hover:-translate-y-1 shadow-[0_4px_20px_rgba(246,224,181,0.2)]">
-              {view === "user" ? "Create Your Envelopes" : "Configure Family Access"}
+              {view === "user" ? "Buat Amplop Anda" : "Konfigurasi Akses Keluarga"}
             </button>
             <button className="glass-card px-8 py-3.5 rounded font-medium text-white hover:bg-white/5 transition-colors">
-              {view === "user" ? "View Monthly Insights" : "Review Security Logs"}
+              {view === "user" ? "Lihat Wawasan Bulanan" : "Tinjau Log Keamanan"}
             </button>
           </div>
 
@@ -76,23 +76,23 @@ export default function Home() {
           <div className="w-full max-w-4xl h-80 glass-card rounded-xl p-8 relative flex flex-col justify-between overflow-hidden group">
             <div className="flex justify-between items-center border-b border-white/5 pb-6">
               <h3 className="font-display text-2xl text-white">
-                {view === "user" ? "Household Budget Allocations" : "Atomic Ledger Transactions"}
+                {view === "user" ? "Alokasi Anggaran Rumah Tangga" : "Transaksi Ledger Atomik"}
               </h3>
-              <span className="font-mono text-xs text-brand-gold uppercase tracking-widest">Live Sync Active</span>
+              <span className="font-mono text-xs text-brand-gold uppercase tracking-widest">Sinkronisasi Aktif</span>
             </div>
             
             <div className="flex-1 mt-8 grid grid-cols-1 md:grid-cols-3 gap-6">
               {view === "user" ? (
                 <>
                   {[
-                    { label: "Groceries", spent: 450, total: 600 },
-                    { label: "Education", spent: 1200, total: 1200 },
-                    { label: "Vacation Fund", spent: 150, total: 500 }
+                    { label: "Kebutuhan Pokok", spent: 4500000, total: 6000000 },
+                    { label: "Pendidikan", spent: 1200000, total: 1200000 },
+                    { label: "Dana Liburan", spent: 1500000, total: 5000000 }
                   ].map((env, i) => (
                     <div key={i} className="bg-brand-slate/40 border border-white/5 rounded-lg p-5 flex flex-col justify-between transition-colors hover:border-brand-gold/30">
                       <div className="text-sm text-white mb-4">{env.label}</div>
                       <div>
-                        <div className="font-mono text-2xl text-brand-gold mb-2">${env.spent} <span className="text-sm text-brand-muted">/ ${env.total}</span></div>
+                        <div className="font-mono text-xl md:text-2xl text-brand-gold mb-2">{(env.spent / 1000000).toFixed(1)}jt <span className="text-sm text-brand-muted">/ {(env.total / 1000000).toFixed(1)}jt</span></div>
                         <div className="h-1 w-full bg-brand-midnight rounded overflow-hidden">
                           <div className={`h-full ${env.spent === env.total ? 'bg-brand-sage' : 'bg-brand-gold'}`} style={{ width: `${(env.spent/env.total)*100}%` }}></div>
                         </div>
@@ -130,19 +130,19 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="font-display text-4xl text-white mb-6">
-                {view === "user" ? "Orchestrate everyday spending." : "Infrastructure that assumes nothing."}
+                {view === "user" ? "Orkestrasikan pengeluaran harian." : "Infrastruktur tanpa kompromi."}
               </h2>
               <p className="text-lg leading-relaxed mb-8">
                 {view === "user" 
-                  ? "Distribute income into rigid digital envelopes. Receive subtle alerts before crossing limits, and reallocate surplus funds with a single tap to ensure the household balance remains flawless."
-                  : "Built on ElysiaJS and Bun, the system enforces pessimistic locking to eradicate race conditions. Connect ESP8266 webhook buttons to log routine expenses instantly without opening a browser."}
+                  ? "Distribusikan pendapatan ke dalam amplop digital yang disiplin. Terima peringatan halus sebelum melewati batas anggaran, dan alokasikan sisa dana hanya dengan satu sentuhan untuk memastikan stabilitas neraca rumah tangga."
+                  : "Dibangun menggunakan ElysiaJS dan Bun, sistem ini menerapkan penguncian pesimis untuk memberantas kondisi balapan (race condition). Hubungkan ke tombol webhook ESP8266 untuk mencatat pengeluaran rutin secara instan tanpa perlu membuka browser."}
               </p>
               
               <ul className="space-y-4">
                 {[
-                  view === "user" ? "Strict Enveloping System" : "Pessimistic Database Locking",
-                  view === "user" ? "Real-Time Shared Tracking" : "Hardware IoT Webhook Integrations",
-                  view === "user" ? "Monthly Story-Driven Insights" : "Immutable Activity Audit Trails"
+                  view === "user" ? "Sistem Amplop Super Ketat" : "Penguncian Database Tingkat Lanjut",
+                  view === "user" ? "Pelacakan Real-Time Bersama" : "Integrasi Perangkat Keras IoT Webhook",
+                  view === "user" ? "Wawasan Bulanan yang Informatif" : "Jejak Audit Aktivitas yang Kekal"
                 ].map((feature, idx) => (
                   <li key={idx} className="flex items-center gap-3">
                     <div className="w-1.5 h-1.5 rounded-full bg-brand-gold"></div>
@@ -157,21 +157,21 @@ export default function Home() {
               {view === "user" ? (
                 <div className="space-y-6">
                   <div className="border-l-2 border-brand-gold pl-5 py-2">
-                    <div className="text-xs text-brand-gold uppercase tracking-widest mb-2">Insight Generated</div>
-                    <p className="text-white font-serif text-lg italic">"You maintained strict discipline with the Groceries envelope this month. We recommend shifting the $150 surplus toward the Vacation Fund."</p>
+                    <div className="text-xs text-brand-gold uppercase tracking-widest mb-2">Wawasan Finansial</div>
+                    <p className="text-white font-serif text-lg italic">"Anda telah menjaga disiplin yang ketat di amplop Kebutuhan Pokok bulan ini. Kami merekomendasikan pemindahan sisa Rp1,5 Juta ini menuju Dana Liburan."</p>
                   </div>
                   <button className="w-full bg-brand-slate hover:bg-brand-slate/80 text-white border border-white/10 py-3 rounded text-sm transition-colors">
-                    Reallocate Funds
+                    Realisasikan Pemindahan
                   </button>
                 </div>
               ) : (
                 <div className="space-y-6">
                   <div className="border-l-2 border-brand-sage pl-5 py-2">
-                    <div className="text-xs text-brand-sage uppercase tracking-widest mb-2">Audit Log Entry</div>
-                    <p className="text-white font-mono text-sm">Action: SOFT_DELETE<br/>Target: envelopes_table (ID: ENV_90X)<br/>Triggered By: Admin_User</p>
+                    <div className="text-xs text-brand-sage uppercase tracking-widest mb-2">Entri Log Audit</div>
+                    <p className="text-white font-mono text-sm">Aksi: SOFT_DELETE<br/>Target: envelopes_table (ID: ENV_90X)<br/>Aktor: Admin_Keluarga</p>
                   </div>
                   <button className="w-full bg-brand-slate hover:bg-brand-slate/80 text-white border border-white/10 py-3 rounded text-sm transition-colors">
-                    Inspect Full Trail
+                    Inspeksi Seluruh Jejak
                   </button>
                 </div>
               )}
@@ -183,17 +183,17 @@ export default function Home() {
       {/* Footer */}
       <footer className="border-t border-white/5 bg-[#070A11] pt-16 pb-12 mt-20">
         <div className="max-w-7xl mx-auto px-6 text-center">
-          <h2 className="font-display text-3xl text-white mb-8">Secure your family's financial truth.</h2>
+          <h2 className="font-display text-3xl text-white mb-8">Amankan kebenaran finansial keluarga Anda.</h2>
           <button className="bg-brand-gold text-brand-midnight px-8 py-3 rounded font-medium transition-transform hover:-translate-y-1">
-            Initialize Workspace
+            Inisialisasi Ruang Kerja
           </button>
           
           <div className="mt-16 text-sm flex flex-col md:flex-row justify-between items-center opacity-60">
-            <div>&copy; 2026 FamFi Architecture.</div>
+            <div>&copy; 2026 Arsitektur FamFi.</div>
             <div className="mt-4 md:mt-0 space-x-6">
-              <a href="#" className="hover:text-white">Security</a>
-              <a href="#" className="hover:text-white">API Reference</a>
-              <a href="#" className="hover:text-white">Manifest</a>
+              <a href="#" className="hover:text-white">Keamanan</a>
+              <a href="#" className="hover:text-white">Referensi API</a>
+              <a href="#" className="hover:text-white">Dokumen Visi</a>
             </div>
           </div>
         </div>
