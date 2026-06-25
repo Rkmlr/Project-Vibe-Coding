@@ -1,0 +1,83 @@
+@import "tailwindcss";
+
+@theme {
+  --color-brand-midnight: #0A0E17;
+  --color-brand-slate: #1A202C;
+  --color-brand-gold: #F6E0B5;
+  --color-brand-gold-muted: #d4b572;
+  --color-brand-sage: #8A9A86;
+  --color-brand-muted: #A0AEC0;
+  
+  --font-sans: var(--font-geist-sans), ui-sans-serif, system-ui, sans-serif;
+  --font-serif: var(--font-playfair), ui-serif, Georgia, serif;
+  --font-mono: var(--font-geist-mono), ui-monospace, SFMono-Regular, monospace;
+}
+
+:root {
+  --background: #0A0E17;
+  --foreground: #F7FAFC;
+}
+
+body {
+  background-color: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-sans);
+  overflow-x: hidden;
+  -webkit-font-smoothing: antialiased;
+}
+
+/* Elegant Headings */
+h1, h2, h3, .font-display {
+  font-family: var(--font-serif);
+  letter-spacing: -0.02em;
+}
+
+/* Glassmorphism utilities */
+.glass-nav {
+  background: rgba(10, 14, 23, 0.7);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border-bottom: 1px solid rgba(246, 224, 181, 0.08);
+}
+
+.glass-card {
+  background: linear-gradient(160deg, rgba(26, 32, 44, 0.5) 0%, rgba(10, 14, 23, 0.8) 100%);
+  backdrop-filter: blur(16px);
+  -webkit-backdrop-filter: blur(16px);
+  border: 1px solid rgba(246, 224, 181, 0.05);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1), box-shadow 0.4s ease, border-color 0.4s ease;
+}
+
+.glass-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 12px 40px rgba(246, 224, 181, 0.08);
+  border-color: rgba(246, 224, 181, 0.2);
+}
+
+/* Elegant animations */
+@keyframes fade-in-up {
+  0% { opacity: 0; transform: translateY(20px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in-up {
+  animation: fade-in-up 0.8s cubic-bezier(0.4, 0, 0.2, 1) forwards;
+}
+
+@keyframes pulse-gold {
+  0%, 100% { opacity: 0.15; transform: scale(1); }
+  50% { opacity: 0.25; transform: scale(1.02); }
+}
+
+.animate-glow {
+  animation: pulse-gold 6s ease-in-out infinite;
+}
+
+/* Gradient Text */
+.text-gold-gradient {
+  background-clip: text;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-image: linear-gradient(135deg, #FFF5D1, #F6E0B5, #C4A15A);
+}
