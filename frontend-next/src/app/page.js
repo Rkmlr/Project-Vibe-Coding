@@ -83,8 +83,18 @@ export default function Home() {
                     <div className="text-sm text-white mb-3">{env.label}</div>
                     <div>
                       <div className="font-mono text-lg text-brand-gold mb-2">{(env.spent / 1000000).toFixed(1)}&nbsp;jt <span className="text-xs text-brand-muted">/ {(env.total / 1000000).toFixed(1)}&nbsp;jt</span></div>
-                      <div className="h-1 w-full bg-brand-midnight rounded overflow-hidden">
-                        <div className={`h-full ${env.spent === env.total ? 'bg-brand-sage' : 'bg-brand-gold'}`} style={{ width: `${(env.spent/env.total)*100}%` }}></div>
+                      
+                      {/* Envelope Progress Visualization */}
+                      <div className="relative h-8 w-full bg-brand-midnight/60 rounded-md overflow-hidden border border-white/5 transition-colors group">
+                        {/* Progress Fill */}
+                        <div className={`absolute left-0 top-0 bottom-0 ${env.spent === env.total ? 'bg-brand-sage' : 'bg-brand-gold'} opacity-20 transition-all duration-1000`} style={{ width: `${(env.spent/env.total)*100}%` }}></div>
+                        <div className={`absolute left-0 top-0 bottom-0 border-r-2 ${env.spent === env.total ? 'border-brand-sage' : 'border-brand-gold'} transition-all duration-1000`} style={{ width: `${(env.spent/env.total)*100}%`, boxShadow: '0 0 12px rgba(246,224,181,0.4)' }}></div>
+                        
+                        {/* Envelope flap aesthetic overlay */}
+                        <svg className="absolute inset-0 w-full h-full opacity-30 pointer-events-none mix-blend-overlay" preserveAspectRatio="none" viewBox="0 0 100 100">
+                          <path d="M0,0 L50,65 L100,0" fill="none" stroke="currentColor" strokeWidth="1.5" className="text-brand-gold"/>
+                          <path d="M0,100 L40,65 M100,100 L60,65" fill="none" stroke="currentColor" strokeWidth="1" className="text-brand-gold"/>
+                        </svg>
                       </div>
                     </div>
                   </div>
