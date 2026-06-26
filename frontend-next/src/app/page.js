@@ -91,23 +91,23 @@ export default function Home() {
 
               {/* Audit Log Visualization */}
               <div className="space-y-4">
-                <h3 className="text-sm font-medium text-brand-muted uppercase tracking-wider mb-2">Log Keamanan Atomik</h3>
+                <h3 className="text-sm font-medium text-brand-muted uppercase tracking-wider mb-2">Proses Transaksi Aman</h3>
                 <div className="space-y-3 font-mono text-xs opacity-90">
                   <div className="flex flex-col space-y-3">
                     <div className="flex justify-between items-center bg-brand-slate/30 p-3 rounded border border-white/5">
-                      <span className="text-brand-sage shrink-0">TX_7F9A2</span>
-                      <span className="text-white truncate mx-3 flex-1 text-left">SELECT … FOR UPDATE</span>
+                      <span className="text-brand-sage shrink-0">1. VALIDASI</span>
+                      <span className="text-white truncate mx-3 flex-1 text-left font-sans">Mengunci amplop untuk cegah data ganda</span>
                       <span className="text-brand-gold shrink-0 text-right">LOCKED</span>
                     </div>
                     <div className="flex justify-between items-center bg-brand-slate/30 p-3 rounded border border-white/5">
-                      <span className="text-brand-sage shrink-0">TX_7F9A2</span>
-                      <span className="text-white truncate mx-3 flex-1 text-left">UPDATE envelopes SET balance = balance - 15</span>
+                      <span className="text-brand-sage shrink-0">2. EKSEKUSI</span>
+                      <span className="text-white truncate mx-3 flex-1 text-left font-sans">Memperbarui saldo dengan akurasi tinggi</span>
                       <span className="text-brand-gold shrink-0 text-right">SUCCESS</span>
                     </div>
                     <div className="flex justify-between items-center bg-brand-slate/30 p-3 rounded border border-white/5">
-                      <span className="text-brand-sage shrink-0">TX_7F9A2</span>
-                      <span className="text-white truncate mx-3 flex-1 text-left">INSERT INTO activity_logs</span>
-                      <span className="text-brand-gold shrink-0 text-right">COMMITTED</span>
+                      <span className="text-brand-sage shrink-0">3. AUDIT</span>
+                      <span className="text-white truncate mx-3 flex-1 text-left font-sans">Menyimpan bukti riwayat secara permanen</span>
+                      <span className="text-brand-gold shrink-0 text-right">SECURED</span>
                     </div>
                   </div>
                 </div>
