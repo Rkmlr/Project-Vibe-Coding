@@ -9,6 +9,7 @@ export default function ManageEnvelopeModal({
   mode = "add", // "add", "edit", "delete"
   envelope = null,
   envelopes = [],
+  onSuccess,
 }) {
   const [name, setName] = useState("");
   const [limit, setLimit] = useState("");
@@ -53,6 +54,7 @@ export default function ManageEnvelopeModal({
         setIsLoading(false);
       } else {
         setIsLoading(false);
+        if (onSuccess) onSuccess();
         onClose();
       }
     } catch (err) {
