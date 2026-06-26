@@ -6,8 +6,6 @@ import EnvelopeGrid from "@/features/envelopes/EnvelopeGrid";
 import TransactionSlip from "@/features/transactions/TransactionSlip";
 import AtomicLedger from "@/features/transactions/AtomicLedger";
 import MonthlyInsights from "@/features/insights/MonthlyInsights";
-import MilestoneTracker from "@/features/insights/MilestoneTracker";
-import ActivityLogs from "@/features/audit-logs/ActivityLogs";
 import FinancialCharts from "@/features/insights/FinancialCharts";
 
 export default function DashboardPage() {
@@ -18,7 +16,6 @@ export default function DashboardPage() {
   const [cashPoolBalance, setCashPoolBalance] = useState(0);
   const [envelopes, setEnvelopes] = useState([]);
   const [transactions, setTransactions] = useState([]);
-  const [auditLogs, setAuditLogs] = useState([]);
   const [members, setMembers] = useState([]);
   const [insightAdvice, setInsightAdvice] = useState("");
   const [isLoading, setIsLoading] = useState(true);
@@ -98,19 +95,8 @@ export default function DashboardPage() {
           setTransactions(transactionsData);
         }
 
-        // 5. Fetch audit logs (only if admin)
+        // 5. Fetch family members list (only if admin)
         if (profile.role === "admin") {
-          const { data: auditLogsData } = await supabase
-            .from("audit_logs")
-            .select("*, profiles(display_name)")
-            .eq("family_id", profile.family_id)
-            .order("created_at", { ascending: false });
-
-          if (auditLogsData) {
-            setAuditLogs(auditLogsData);
-          }
-
-          // Fetch family members list
           const { data: membersData } = await supabase
             .from("profiles")
             .select("id, display_name, role")
@@ -159,11 +145,7 @@ export default function DashboardPage() {
     };
   });
 
-  // Map audit logs to the format ActivityLogs expects
-  const mappedLogs = auditLogs.map(log => ({
-    ...log,
-    user_name: log.profiles ? log.profiles.display_name : "System",
-  }));
+
 
   return (
     <div className="space-y-12 animate-fade-in-up">
@@ -212,33 +194,27 @@ export default function DashboardPage() {
 
       {/* Admin Interface Layout */}
       {role === "admin" && (
-        <>
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            <div className="lg:col-span-2 space-y-10">
-              <EnvelopeGrid envelopes={envelopes} role={role} members={members} onSuccess={fetchData} />
-              
-              <div className="pt-6 border-t border-white/5">
-                <FinancialCharts envelopes={envelopes} transactions={transactions} />
-              </div>
-
-              <div className="pt-6 border-t border-white/5">
-                <h3 className="font-display text-xl text-white mb-4">Catat Transaksi Baru</h3>
-                <TransactionSlip envelopes={envelopes} role={role} onTransactionSuccess={fetchData} />
-              </div>
+        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+          {/* Left Column: Core Financial State */}
+          <div className="lg:col-span-2 space-y-10">
+            <EnvelopeGrid envelopes={envelopes} role={role} members={members} onSuccess={fetchData} />
+            
+            <div className="pt-6 border-t border-white/5">
+              <FinancialCharts envelopes={envelopes} transactions={transactions} />
+            </div>
+          </div>
+          
+          {/* Right Column: Actions & Recent Activity */}
+          <div className="space-y-8">
+            <div className="p-6 glass-card rounded-xl border border-white/5">
+              <h3 className="font-display text-xl text-white mb-4">Catat Transaksi Baru</h3>
+              <TransactionSlip envelopes={envelopes} role={role} onTransactionSuccess={fetchData} />
             </div>
             
-            <div className="space-y-8">
-              <MonthlyInsights advice={insightAdvice} onReallocate={handleReallocate} />
-              <MilestoneTracker />
-              <AtomicLedger transactions={mappedTransactions} limit={4} />
-            </div>
+            <MonthlyInsights advice={insightAdvice} onReallocate={handleReallocate} />
+            <AtomicLedger transactions={mappedTransactions} limit={4} />
           </div>
-
-          {/* Full Activity logs for Admin */}
-          <div className="pt-8 border-t border-white/5">
-            <ActivityLogs logs={mappedLogs} />
-          </div>
-        </>
+        </div>
       )}
 
       {/* Member Interface Layout */}
