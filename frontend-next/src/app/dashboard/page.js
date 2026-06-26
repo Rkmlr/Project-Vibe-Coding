@@ -207,7 +207,7 @@ export default function DashboardPage() {
           {/* Right Column: Actions & Recent Activity */}
           <div className="space-y-8">
             <div className="p-6 glass-card rounded-xl border border-white/5">
-              <h3 className="font-display text-xl text-white mb-4">Catat Transaksi Baru</h3>
+              <h2 className="font-display text-xl text-white mb-4">Catat Transaksi Baru</h2>
               <TransactionSlip envelopes={envelopes} role={role} onTransactionSuccess={fetchData} />
             </div>
             
