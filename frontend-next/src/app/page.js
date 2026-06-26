@@ -121,38 +121,104 @@ export default function Home() {
           <div className="grid md:grid-cols-2 gap-16 items-center">
             <div>
               <h2 className="font-display text-4xl text-white mb-6 text-balance">
-                Orkestrasikan pengeluaran dengan infrastruktur tanpa kompromi.
+                Disiplin finansial yang sederhana dan tepercaya.
               </h2>
-              <p className="text-lg leading-relaxed mb-8 text-balance">
-                Distribusikan pendapatan ke dalam amplop digital yang disiplin. Dibangun dengan penguncian pesimis untuk memberantas kondisi balapan (race condition), serta memastikan integritas catatan finansial secara akurat.
+              <p className="text-lg leading-relaxed mb-8 text-balance text-brand-muted">
+                FamFi membagi pendapatan bulanan keluarga ke dalam kategori belanja khusus. Mencegah pengeluaran berlebih secara kolektif dengan catatan aktivitas yang transparan untuk semua anggota keluarga.
               </p>
               
-              <ul className="space-y-4">
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-6 mt-8">
                 {[
-                  "Sistem Amplop Super Ketat",
-                  "Pelacakan Real-Time Bersama",
-                  "Penguncian Database Tingkat Lanjut",
-                  "Jejak Audit Aktivitas yang Kekal"
-                ].map((feature, idx) => (
-                  <li key={idx} className="flex items-center gap-3">
-                    <div className="w-1.5 h-1.5 rounded-full bg-brand-gold" aria-hidden="true"></div>
-                    <span className="text-white">{feature}</span>
-                  </li>
+                  {
+                    title: "Amplop Digital",
+                    desc: "Alokasikan batas belanja per kategori secara disiplin agar keuangan tetap terkendali.",
+                    icon: (
+                      <svg aria-hidden="true" className="w-5 h-5 text-brand-gold shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M3 7v10a2 2 0 002 2h14a2 2 0 002-2V9a2 2 0 00-2-2h-6l-2-2H5a2 2 0 00-2 2z" />
+                      </svg>
+                    )
+                  },
+                  {
+                    title: "Sinkronisasi Instan",
+                    desc: "Perubahan anggaran langsung diperbarui dan terlihat oleh seluruh anggota keluarga.",
+                    icon: (
+                      <svg aria-hidden="true" className="w-5 h-5 text-brand-gold shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M4 4v5h.582m15.356 2A8.001 8.001 0 1121.21 8H17" />
+                      </svg>
+                    )
+                  },
+                  {
+                    title: "Catatan Keamanan",
+                    desc: "Riwayat aktivitas transparan yang tidak dapat dimanipulasi untuk keterbukaan bersama.",
+                    icon: (
+                      <svg aria-hidden="true" className="w-5 h-5 text-brand-gold shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04A12.02 12.02 0 003 9c0 5.591 3.824 10.29 9 11.622 5.176-1.332 9-6.03 9-11.622 0-1.042-.133-2.052-.382-3.016z" />
+                      </svg>
+                    )
+                  },
+                  {
+                    title: "Delegasi Akses",
+                    desc: "Beri tanggung jawab atas amplop belanja tertentu kepada anggota keluarga tertentu.",
+                    icon: (
+                      <svg aria-hidden="true" className="w-5 h-5 text-brand-gold shrink-0 mt-0.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M18 9v3m0 0v3m0-3h3m-3 0h-3m-2-5a4 4 0 11-8 0 4 4 0 018 0zM3 20a6 6 0 0112 0v1H3v-1z" />
+                      </svg>
+                    )
+                  }
+                ].map((feat, idx) => (
+                  <div key={idx} className="flex gap-3 text-left">
+                    {feat.icon}
+                    <div>
+                      <h4 className="text-sm font-semibold text-white mb-1 font-display">{feat.title}</h4>
+                      <p className="text-xs text-brand-muted leading-relaxed">{feat.desc}</p>
+                    </div>
+                  </div>
                 ))}
-              </ul>
+              </div>
             </div>
             
-            <div className="glass-card p-10 rounded-xl relative">
+            <div className="glass-card p-8 rounded-xl relative overflow-hidden">
               <div className="absolute -top-4 -right-4 w-24 h-24 bg-brand-gold/10 rounded-full blur-2xl" aria-hidden="true"></div>
-              <div className="space-y-6">
-                <div className="border-l-2 border-brand-gold pl-5 py-2">
-                  <div className="text-xs text-brand-gold uppercase tracking-widest mb-2">Wawasan Finansial</div>
-                  <p className="text-white font-serif text-lg italic">“Anda telah menjaga disiplin yang ketat di amplop Kebutuhan Pokok bulan ini. Kami merekomendasikan pemindahan sisa Rp1,5 Juta ini menuju Dana Liburan.”</p>
+              
+              <div className="flex items-center justify-between border-b border-white/5 pb-4 mb-4">
+                <div className="flex items-center gap-2">
+                  <span className="flex h-2 w-2 relative" aria-hidden="true">
+                    <span className="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-gold opacity-75"></span>
+                    <span className="relative inline-flex rounded-full h-2 w-2 bg-brand-gold"></span>
+                  </span>
+                  <span className="text-xs text-brand-gold uppercase tracking-widest font-mono">Wawasan Finansial</span>
                 </div>
-                <button className="w-full bg-brand-slate hover:bg-brand-slate/80 text-white border border-white/10 py-3 rounded text-sm transition-colors focus-visible:ring-2 focus-visible:ring-brand-gold outline-none">
-                  Realisasikan Pemindahan
-                </button>
+                <span className="bg-brand-gold/10 text-brand-gold text-[10px] font-mono px-2 py-0.5 rounded border border-brand-gold/20">Saran Optimasi</span>
               </div>
+              
+              <div className="bg-brand-midnight/40 border border-white/5 rounded-lg p-4 mb-4 space-y-3 font-mono text-xs text-left">
+                <div className="flex justify-between items-center bg-brand-slate/20 p-2.5 rounded border border-white/5">
+                  <span className="text-brand-muted font-sans">Sumber:</span>
+                  <span className="text-white font-sans font-medium">Kebutuhan Pokok</span>
+                  <span className="text-brand-sage font-mono">Sisa Rp1,5jt</span>
+                </div>
+                <div className="flex justify-center my-1 text-brand-gold">
+                  <svg aria-hidden="true" className="w-5 h-5 animate-bounce" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5} d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+                  </svg>
+                </div>
+                <div className="flex justify-between items-center bg-brand-slate/20 p-2.5 rounded border border-white/5">
+                  <span className="text-brand-muted font-sans">Tujuan:</span>
+                  <span className="text-white font-sans font-medium">Dana Liburan</span>
+                  <span className="text-brand-gold font-mono">+Rp1,5jt</span>
+                </div>
+              </div>
+
+              <p className="text-white font-serif text-[15px] leading-relaxed italic border-l-2 border-brand-gold pl-4 py-1 mb-6 text-left">
+                “Anda telah menjaga disiplin yang ketat di amplop Kebutuhan Pokok bulan ini. Kami merekomendasikan pemindahan sisa Rp1,5 Juta ini menuju Dana Liburan.”
+              </p>
+
+              <button 
+                onClick={() => setIsAuthOpen(true)}
+                className="w-full bg-brand-gold hover:bg-brand-gold-muted text-brand-midnight py-3 rounded font-medium text-sm transition-all transform hover:-translate-y-0.5 shadow-[0_4px_12px_rgba(246,224,181,0.1)] cursor-pointer focus-visible:ring-2 focus-visible:ring-white outline-none"
+              >
+                Optimalkan Anggaran
+              </button>
             </div>
           </div>
         </section>
