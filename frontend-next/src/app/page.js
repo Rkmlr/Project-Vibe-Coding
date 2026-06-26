@@ -96,17 +96,17 @@ export default function Home() {
                   <div className="flex flex-col space-y-3">
                     <div className="flex justify-between items-center bg-brand-slate/30 p-3 rounded border border-white/5">
                       <span className="text-brand-sage shrink-0">1. VALIDASI</span>
-                      <span className="text-white truncate mx-3 flex-1 text-left font-sans">Mengunci amplop untuk cegah data ganda</span>
+                      <span className="text-white mx-3 flex-1 text-left font-sans">Mengunci amplop untuk cegah data ganda</span>
                       <span className="text-brand-gold shrink-0 text-right">LOCKED</span>
                     </div>
                     <div className="flex justify-between items-center bg-brand-slate/30 p-3 rounded border border-white/5">
                       <span className="text-brand-sage shrink-0">2. EKSEKUSI</span>
-                      <span className="text-white truncate mx-3 flex-1 text-left font-sans">Memperbarui saldo dengan akurasi tinggi</span>
+                      <span className="text-white mx-3 flex-1 text-left font-sans">Memperbarui saldo dengan akurasi tinggi</span>
                       <span className="text-brand-gold shrink-0 text-right">SUCCESS</span>
                     </div>
                     <div className="flex justify-between items-center bg-brand-slate/30 p-3 rounded border border-white/5">
                       <span className="text-brand-sage shrink-0">3. AUDIT</span>
-                      <span className="text-white truncate mx-3 flex-1 text-left font-sans">Menyimpan bukti riwayat secara permanen</span>
+                      <span className="text-white mx-3 flex-1 text-left font-sans">Menyimpan bukti riwayat secara permanen</span>
                       <span className="text-brand-gold shrink-0 text-right">SECURED</span>
                     </div>
                   </div>
