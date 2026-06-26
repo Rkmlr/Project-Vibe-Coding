@@ -27,7 +27,7 @@ async function getAdminProfile() {
 /**
  * Create a new envelope
  */
-export async function createEnvelope(name, limitAmount, category) {
+export async function createEnvelope(name, limitAmount, category, assignedTo = null) {
   try {
     const profile = await getAdminProfile();
     const supabase = await createClient();
@@ -40,6 +40,7 @@ export async function createEnvelope(name, limitAmount, category) {
         limit_amount: parseFloat(limitAmount),
         category,
         balance: 0, // Initial balance is 0
+        assigned_to: assignedTo || null,
       })
       .select()
       .single();
@@ -56,7 +57,7 @@ export async function createEnvelope(name, limitAmount, category) {
 /**
  * Update an envelope's name, limit, and category
  */
-export async function updateEnvelope(envelopeId, name, limitAmount, category) {
+export async function updateEnvelope(envelopeId, name, limitAmount, category, assignedTo = null) {
   try {
     await getAdminProfile();
     const supabase = await createClient();
@@ -67,6 +68,7 @@ export async function updateEnvelope(envelopeId, name, limitAmount, category) {
         name,
         limit_amount: parseFloat(limitAmount),
         category,
+        assigned_to: assignedTo || null,
       })
       .eq("id", envelopeId)
       .select()

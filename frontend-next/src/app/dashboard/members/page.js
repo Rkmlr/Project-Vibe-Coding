@@ -26,7 +26,7 @@ export default function MembersPage() {
       .eq("id", user.id)
       .single();
 
-    if (!profile) {
+    if (!profile || profile.role !== "admin") {
       router.push("/dashboard");
       return;
     }

@@ -5,7 +5,7 @@ import ManageEnvelopeModal from "./ManageEnvelopeModal";
 import CloseBookModal from "./CloseBookModal";
 import TransferModal from "./TransferModal";
 
-export default function EnvelopeGrid({ envelopes = [], role = "member", onSuccess }) {
+export default function EnvelopeGrid({ envelopes = [], role = "member", members = [], onSuccess }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState("add");
   const [selectedEnvelope, setSelectedEnvelope] = useState(null);
@@ -107,15 +107,22 @@ export default function EnvelopeGrid({ envelopes = [], role = "member", onSucces
                       <div className="flex justify-between items-start mb-6 z-10">
                         <div>
                           <h4 className="text-white font-medium text-lg">{env.name}</h4>
-                          <span className={`inline-block text-[9px] font-mono px-2 py-0.5 rounded-full border mt-1 uppercase ${
-                            status === "warning"
-                              ? "bg-red-500/10 border-red-500/20 text-red-400"
-                              : status === "locked"
-                              ? "bg-brand-sage/10 border-brand-sage/20 text-brand-sage"
-                              : "bg-brand-gold/10 border-brand-gold/20 text-brand-gold"
-                          }`}>
-                            {status === "warning" ? "WARNING" : status === "locked" ? "EMPTY / SAVED" : "SAFE"}
-                          </span>
+                          <div className="flex flex-wrap items-center gap-1.5 mt-1">
+                            <span className={`inline-block text-[9px] font-mono px-2 py-0.5 rounded-full border uppercase ${
+                              status === "warning"
+                                ? "bg-red-500/10 border-red-500/20 text-red-400"
+                                : status === "locked"
+                                ? "bg-brand-sage/10 border-brand-sage/20 text-brand-sage"
+                                : "bg-brand-gold/10 border-brand-gold/20 text-brand-gold"
+                            }`}>
+                              {status === "warning" ? "WARNING" : status === "locked" ? "EMPTY / SAVED" : "SAFE"}
+                            </span>
+                            {env.assigned_to && (
+                              <span className="inline-block text-[9px] font-mono px-2 py-0.5 rounded-full border border-blue-500/20 bg-blue-500/10 text-blue-400 uppercase">
+                                Akses: {members.find(m => m.id === env.assigned_to)?.display_name || "Anggota"}
+                              </span>
+                            )}
+                          </div>
                         </div>
                         {isAdmin && (
                           <button 
@@ -198,6 +205,7 @@ export default function EnvelopeGrid({ envelopes = [], role = "member", onSucces
         mode={modalMode}
         envelope={selectedEnvelope}
         envelopes={envelopes}
+        members={members}
         onSuccess={onSuccess}
       />
 

@@ -19,6 +19,7 @@ export default function DashboardPage() {
   const [envelopes, setEnvelopes] = useState([]);
   const [transactions, setTransactions] = useState([]);
   const [auditLogs, setAuditLogs] = useState([]);
+  const [members, setMembers] = useState([]);
   const [insightAdvice, setInsightAdvice] = useState("");
   const [isLoading, setIsLoading] = useState(true);
 
@@ -107,6 +108,16 @@ export default function DashboardPage() {
 
           if (auditLogsData) {
             setAuditLogs(auditLogsData);
+          }
+
+          // Fetch family members list
+          const { data: membersData } = await supabase
+            .from("profiles")
+            .select("id, display_name, role")
+            .eq("family_id", profile.family_id);
+
+          if (membersData) {
+            setMembers(membersData);
           }
         }
       }
@@ -204,7 +215,7 @@ export default function DashboardPage() {
         <>
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
             <div className="lg:col-span-2 space-y-10">
-              <EnvelopeGrid envelopes={envelopes} role={role} onSuccess={fetchData} />
+              <EnvelopeGrid envelopes={envelopes} role={role} members={members} onSuccess={fetchData} />
               
               <div className="pt-6 border-t border-white/5">
                 <FinancialCharts envelopes={envelopes} transactions={transactions} />
