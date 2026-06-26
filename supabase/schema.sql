@@ -196,6 +196,20 @@ ALTER TABLE public.envelopes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
 
+-- E. Kebijakan Keamanan untuk Tabel `audit_logs` (Hanya Admin)
+-- Drop existing policies if they exist to prevent 'already exists' errors on re-run
+DROP POLICY IF EXISTS select_same_family_profiles ON public.profiles;
+DROP POLICY IF EXISTS update_own_profile ON public.profiles;
+DROP POLICY IF EXISTS admin_update_profiles ON public.profiles;
+DROP POLICY IF EXISTS select_own_family ON public.families;
+DROP POLICY IF EXISTS insert_new_family ON public.families;
+DROP POLICY IF EXISTS admin_update_family ON public.families;
+DROP POLICY IF EXISTS select_family_envelopes ON public.envelopes;
+DROP POLICY IF EXISTS admin_manage_envelopes ON public.envelopes;
+DROP POLICY IF EXISTS select_family_transactions ON public.transactions;
+DROP POLICY IF EXISTS insert_family_transactions ON public.transactions;
+DROP POLICY IF EXISTS select_family_audit_logs ON public.audit_logs;
+
 -- A. Kebijakan Keamanan untuk Tabel `profiles`
 CREATE POLICY select_same_family_profiles ON public.profiles 
     FOR SELECT USING (family_id = public.get_user_family_id() OR id = auth.uid());
@@ -233,3 +247,52 @@ CREATE POLICY insert_family_transactions ON public.transactions
 -- E. Kebijakan Keamanan untuk Tabel `audit_logs` (Hanya Admin)
 CREATE POLICY select_family_audit_logs ON public.audit_logs 
     FOR SELECT USING (family_id = public.get_user_family_id() AND public.is_user_admin());
+
+-- =====================================================================
+-- 5. RPC FUNCTIONS (SECURITY DEFINER) FOR ONBOARDING
+-- =====================================================================
+
+-- Fungsi untuk membuat keluarga baru dan menjadikan pembuatnya sebagai Admin
+CREATE OR REPLACE FUNCTION public.create_family_and_set_admin(family_name TEXT, invite_code TEXT)
+RETURNS public.families AS $$
+DECLARE
+  new_family public.families;
+BEGIN
+  -- 1. Buat grup keluarga baru
+  INSERT INTO public.families (name, invite_code, cash_pool_balance)
+  VALUES (family_name, invite_code, 0)
+  RETURNING * INTO new_family;
+
+  -- 2. Update profil pembuat menjadi Admin keluarga tersebut
+  UPDATE public.profiles
+  SET family_id = new_family.id, role = 'admin'
+  WHERE id = auth.uid();
+
+  RETURN new_family;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Fungsi untuk bergabung ke grup keluarga yang sudah ada dengan kode undangan
+CREATE OR REPLACE FUNCTION public.join_family_by_code(p_invite_code TEXT)
+RETURNS public.families AS $$
+DECLARE
+  target_family public.families;
+BEGIN
+  -- 1. Cari keluarga berdasarkan kode
+  SELECT * INTO target_family
+  FROM public.families
+  WHERE invite_code = p_invite_code;
+
+  IF target_family.id IS NULL THEN
+    RAISE EXCEPTION 'Kode undangan tidak valid atau keluarga tidak ditemukan.';
+  END IF;
+
+  -- 2. Update profil pengguna menjadi Member dari keluarga tersebut
+  UPDATE public.profiles
+  SET family_id = target_family.id, role = 'member'
+  WHERE id = auth.uid();
+
+  RETURN target_family;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+

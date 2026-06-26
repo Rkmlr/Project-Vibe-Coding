@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
+import LoginForm from "@/features/authentication/LoginForm";
 
 export default function Home() {
   const [view, setView] = useState("user"); // 'user' or 'admin'
+  const [isAuthOpen, setIsAuthOpen] = useState(false);
 
   return (
     <div className="min-h-screen relative overflow-hidden bg-brand-midnight text-brand-muted">
@@ -40,7 +42,10 @@ export default function Home() {
                 Manajer Keuangan
               </button>
             </div>
-            <button className="bg-white/5 hover:bg-white/10 text-white border border-white/10 px-6 py-2.5 rounded text-sm font-medium transition-colors">
+            <button 
+              onClick={() => setIsAuthOpen(true)}
+              className="bg-white/5 hover:bg-white/10 text-white border border-white/10 px-6 py-2.5 rounded text-sm font-medium transition-colors cursor-pointer"
+            >
               Masuk
             </button>
           </div>
@@ -64,7 +69,10 @@ export default function Home() {
           </p>
           
           <div className="flex flex-col sm:flex-row gap-5 mb-24">
-            <button className="bg-brand-gold hover:bg-brand-gold-muted text-brand-midnight px-8 py-3.5 rounded font-medium transition-all transform hover:-translate-y-1 shadow-[0_4px_20px_rgba(246,224,181,0.2)]">
+            <button 
+              onClick={() => setIsAuthOpen(true)}
+              className="bg-brand-gold hover:bg-brand-gold-muted text-brand-midnight px-8 py-3.5 rounded font-medium transition-all transform hover:-translate-y-1 shadow-[0_4px_20px_rgba(246,224,181,0.2)] cursor-pointer"
+            >
               {view === "user" ? "Buat Amplop Anda" : "Konfigurasi Akses Keluarga"}
             </button>
             <button className="glass-card px-8 py-3.5 rounded font-medium text-white hover:bg-white/5 transition-colors">
@@ -184,7 +192,10 @@ export default function Home() {
       <footer className="border-t border-white/5 bg-[#070A11] pt-16 pb-12 mt-20">
         <div className="max-w-7xl mx-auto px-6 text-center">
           <h2 className="font-display text-3xl text-white mb-8">Amankan kebenaran finansial keluarga Anda.</h2>
-          <button className="bg-brand-gold text-brand-midnight px-8 py-3 rounded font-medium transition-transform hover:-translate-y-1">
+          <button 
+            onClick={() => setIsAuthOpen(true)}
+            className="bg-brand-gold text-brand-midnight px-8 py-3 rounded font-medium transition-transform hover:-translate-y-1 cursor-pointer"
+          >
             Inisialisasi Ruang Kerja
           </button>
           
@@ -198,6 +209,21 @@ export default function Home() {
           </div>
         </div>
       </footer>
+
+      {/* Auth Modal Overlay */}
+      {isAuthOpen && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-brand-midnight/85 backdrop-blur-md animate-fade-in animate-duration-200">
+          <div className="relative w-full max-w-md mx-4 animate-fade-in-up">
+            <button 
+              onClick={() => setIsAuthOpen(false)}
+              className="absolute top-4 right-4 text-brand-muted hover:text-white transition-colors z-10 text-lg font-bold font-mono cursor-pointer"
+            >
+              ✕
+            </button>
+            <LoginForm />
+          </div>
+        </div>
+      )}
     </div>
   );
 }
