@@ -89,12 +89,12 @@ export default function TransactionSlip({ envelopes = [], role = "member", onTra
   };
 
   return (
-    <div className="glass-card rounded-2xl overflow-hidden border border-brand-gold/10 relative shadow-2xl md:flex w-full">
+    <div className="glass-card rounded-2xl overflow-hidden border border-brand-gold/10 relative shadow-2xl flex flex-col w-full">
       {/* Subtle Background Accent */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-brand-gold/5 rounded-full blur-3xl pointer-events-none"></div>
       
       {/* Input Area */}
-      <div className="p-6 md:w-1/2 flex flex-col justify-center border-b md:border-b-0 md:border-r border-white/5 relative z-10">
+      <div className="p-6 flex flex-col justify-center border-b border-white/5 relative z-10">
         
         {/* Toggle Type - Only show for Admin (Orang Tua) */}
         {isAdmin ? (
@@ -142,7 +142,7 @@ export default function TransactionSlip({ envelopes = [], role = "member", onTra
         </div>
 
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
+          <div className="flex flex-col gap-3">
             <div>
               <label className="text-[10px] text-brand-muted mb-1.5 block uppercase tracking-wider font-mono">Pilih Amplop</label>
               {txType === "EXPENSE" ? (
@@ -198,7 +198,7 @@ export default function TransactionSlip({ envelopes = [], role = "member", onTra
       </div>
 
       {/* Numpad & Submit */}
-      <div className="p-6 md:w-1/2 bg-brand-slate/30 relative z-10 flex flex-col justify-between">
+      <div className="p-6 bg-brand-slate/30 relative z-10 flex flex-col justify-between">
         <div className="grid grid-cols-3 gap-3 flex-1 mb-6">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, "000", 0].map((num, i) => (
             <button 
