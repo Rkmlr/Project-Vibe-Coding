@@ -3,12 +3,14 @@
 import { useState } from "react";
 import ManageEnvelopeModal from "./ManageEnvelopeModal";
 import CloseBookModal from "./CloseBookModal";
+import TransferModal from "./TransferModal";
 
-export default function EnvelopeGrid({ envelopes = [], role = "member" }) {
+export default function EnvelopeGrid({ envelopes = [], role = "member", onSuccess }) {
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [modalMode, setModalMode] = useState("add");
   const [selectedEnvelope, setSelectedEnvelope] = useState(null);
   const [isCloseBookOpen, setIsCloseBookOpen] = useState(false);
+  const [isTransferOpen, setIsTransferOpen] = useState(false);
 
   const openModal = (mode, envelope = null) => {
     setModalMode(mode);
@@ -47,6 +49,12 @@ export default function EnvelopeGrid({ envelopes = [], role = "member" }) {
               className="text-xs text-brand-gold bg-brand-gold/10 hover:bg-brand-gold/20 border border-brand-gold/30 px-4 py-2 rounded font-medium transition-colors cursor-pointer"
             >
               Tutup Buku Bulanan
+            </button>
+            <button 
+              onClick={() => setIsTransferOpen(true)}
+              className="text-xs text-white bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-2 rounded font-medium transition-colors cursor-pointer"
+            >
+              Transfer Saldo
             </button>
             <button 
               onClick={() => openModal("add")}
@@ -190,6 +198,7 @@ export default function EnvelopeGrid({ envelopes = [], role = "member" }) {
         mode={modalMode}
         envelope={selectedEnvelope}
         envelopes={envelopes}
+        onSuccess={onSuccess}
       />
 
       {/* Close Monthly Book Modal */}
@@ -197,6 +206,15 @@ export default function EnvelopeGrid({ envelopes = [], role = "member" }) {
         isOpen={isCloseBookOpen}
         onClose={() => setIsCloseBookOpen(false)}
         envelopes={envelopes}
+        onSuccess={onSuccess}
+      />
+
+      {/* Transfer Budget Modal */}
+      <TransferModal 
+        isOpen={isTransferOpen}
+        onClose={() => setIsTransferOpen(false)}
+        envelopes={envelopes}
+        onSuccess={onSuccess}
       />
     </div>
   );

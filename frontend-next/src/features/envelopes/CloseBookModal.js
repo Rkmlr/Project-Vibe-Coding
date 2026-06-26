@@ -7,6 +7,7 @@ export default function CloseBookModal({
   isOpen,
   onClose,
   envelopes = [],
+  onSuccess,
 }) {
   const [method, setMethod] = useState("sweep"); // "sweep", "rollover", "savings"
   const [savingsEnvelopeId, setSavingsEnvelopeId] = useState("");
@@ -34,6 +35,7 @@ export default function CloseBookModal({
         setIsLoading(false);
       } else {
         setIsLoading(false);
+        if (onSuccess) onSuccess();
         onClose();
       }
     } catch (err) {
