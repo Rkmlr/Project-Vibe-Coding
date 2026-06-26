@@ -28,6 +28,7 @@ export default function Home() {
           
           <div className="flex items-center gap-6">
             <button 
+              id="btn-nav-login"
               onClick={() => setIsAuthOpen(true)}
               className="bg-white/5 hover:bg-white/10 text-white border border-white/10 px-6 py-2.5 rounded text-sm font-medium transition-colors cursor-pointer focus-visible:ring-2 focus-visible:ring-brand-gold outline-none"
             >
@@ -41,14 +42,15 @@ export default function Home() {
         {/* Dynamic Hero Section */}
         <section className="flex flex-col items-center text-center mt-8 animate-fade-in-up">
           <h1 className="font-display text-5xl md:text-7xl font-bold tracking-tight mb-6 text-white max-w-4xl leading-tight text-balance">
-            Lindungi masa depan finansial keluarga. <br/><span className="text-gold-gradient italic">Satu amplop setiap waktu.</span>
+            Keuangan keluarga yang lebih baik. <br/><span className="text-gold-gradient italic">Satu amplop digital setiap waktu.</span>
           </h1>
-          <p className="text-lg md:text-xl max-w-2xl mb-12 leading-relaxed opacity-90 text-balance">
-            Alokasikan dana ke dalam amplop digital, lacak pengeluaran bersama secara instan, dan orkestrasikan arus kas dengan presisi tinggi demi keamanan finansial keluarga Anda.
+          <p className="text-lg md:text-xl max-w-2xl mb-12 leading-relaxed opacity-90 text-balance text-brand-muted">
+            FamFi membantu keluarga Anda mengelola uang dengan mudah. Tentukan anggaran belanja, lacak pengeluaran bersama secara real-time, dan capai tujuan finansial dengan aman.
           </p>
           
           <div className="flex flex-col sm:flex-row gap-5 mb-24">
             <button 
+              id="btn-hero-cta"
               onClick={() => setIsAuthOpen(true)}
               className="bg-brand-gold hover:bg-brand-gold-muted text-brand-midnight px-8 py-3.5 rounded font-medium transition-all transform hover:-translate-y-1 shadow-[0_4px_20px_rgba(246,224,181,0.2)] cursor-pointer focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 outline-none"
             >
@@ -80,7 +82,7 @@ export default function Home() {
                   <div key={i} className="bg-brand-slate/40 border border-white/5 rounded-lg p-4 transition-colors hover:border-brand-gold/30">
                     <div className="text-sm text-white mb-3">{env.label}</div>
                     <div>
-                      <div className="font-mono text-lg text-brand-gold mb-2">{(env.spent / 1000000).toFixed(1)}jt <span className="text-xs text-brand-muted">/ {(env.total / 1000000).toFixed(1)}jt</span></div>
+                      <div className="font-mono text-lg text-brand-gold mb-2">{(env.spent / 1000000).toFixed(1)}&nbsp;jt <span className="text-xs text-brand-muted">/ {(env.total / 1000000).toFixed(1)}&nbsp;jt</span></div>
                       <div className="h-1 w-full bg-brand-midnight rounded overflow-hidden">
                         <div className={`h-full ${env.spent === env.total ? 'bg-brand-sage' : 'bg-brand-gold'}`} style={{ width: `${(env.spent/env.total)*100}%` }}></div>
                       </div>
@@ -97,17 +99,17 @@ export default function Home() {
                     <div className="flex justify-between items-center bg-brand-slate/30 p-3 rounded border border-white/5">
                       <span className="text-brand-sage shrink-0">1. VALIDASI</span>
                       <span className="text-white mx-3 flex-1 text-left font-sans">Mengunci amplop untuk cegah data ganda</span>
-                      <span className="text-brand-gold shrink-0 text-right">LOCKED</span>
+                      <span className="bg-red-500/10 text-red-400 border border-red-500/20 px-2 py-0.5 rounded-full shrink-0 text-right">LOCKED</span>
                     </div>
                     <div className="flex justify-between items-center bg-brand-slate/30 p-3 rounded border border-white/5">
                       <span className="text-brand-sage shrink-0">2. EKSEKUSI</span>
                       <span className="text-white mx-3 flex-1 text-left font-sans">Memperbarui saldo dengan akurasi tinggi</span>
-                      <span className="text-brand-gold shrink-0 text-right">SUCCESS</span>
+                      <span className="bg-green-500/10 text-green-400 border border-green-500/20 px-2 py-0.5 rounded-full shrink-0 text-right">SUCCESS</span>
                     </div>
                     <div className="flex justify-between items-center bg-brand-slate/30 p-3 rounded border border-white/5">
                       <span className="text-brand-sage shrink-0">3. AUDIT</span>
                       <span className="text-white mx-3 flex-1 text-left font-sans">Menyimpan bukti riwayat secara permanen</span>
-                      <span className="text-brand-gold shrink-0 text-right">SECURED</span>
+                      <span className="bg-brand-gold/10 text-brand-gold border border-brand-gold/20 px-2 py-0.5 rounded-full shrink-0 text-right">SECURED</span>
                     </div>
                   </div>
                 </div>
@@ -214,6 +216,7 @@ export default function Home() {
               </p>
 
               <button 
+                id="btn-optimize-cta"
                 onClick={() => setIsAuthOpen(true)}
                 className="w-full bg-brand-gold hover:bg-brand-gold-muted text-brand-midnight py-3 rounded font-medium text-sm transition-all transform hover:-translate-y-0.5 shadow-[0_4px_12px_rgba(246,224,181,0.1)] cursor-pointer focus-visible:ring-2 focus-visible:ring-white outline-none"
               >
@@ -229,6 +232,7 @@ export default function Home() {
         <div className="max-w-7xl mx-auto px-6 text-center">
           <h2 className="font-display text-3xl text-white mb-8 text-balance">Amankan kebenaran finansial keluarga Anda.</h2>
           <button 
+            id="btn-footer-cta"
             onClick={() => setIsAuthOpen(true)}
             className="bg-brand-gold text-brand-midnight px-8 py-3 rounded font-medium transition-transform hover:-translate-y-1 cursor-pointer focus-visible:ring-2 focus-visible:ring-white outline-none"
           >

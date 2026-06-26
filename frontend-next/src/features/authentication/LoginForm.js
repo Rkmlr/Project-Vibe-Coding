@@ -50,7 +50,7 @@ export default function LoginForm() {
             setIsLoginMode(true);
             setError("");
           }}
-          className={`flex-1 pb-3 text-sm font-medium transition-colors relative ${
+          className={`flex-1 pb-3 text-sm font-medium transition-colors relative focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:outline-none rounded-t-lg ${
             isLoginMode ? "text-brand-gold font-semibold" : "text-brand-muted hover:text-white"
           }`}
         >
@@ -65,7 +65,7 @@ export default function LoginForm() {
             setIsLoginMode(false);
             setError("");
           }}
-          className={`flex-1 pb-3 text-sm font-medium transition-colors relative ${
+          className={`flex-1 pb-3 text-sm font-medium transition-colors relative focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:outline-none rounded-t-lg ${
             !isLoginMode ? "text-brand-gold font-semibold" : "text-brand-muted hover:text-white"
           }`}
         >
@@ -103,9 +103,10 @@ export default function LoginForm() {
             <input
               type="text"
               name="displayName"
-              placeholder="cth: Bapak, Ibu, Kakak, Sarah"
+              placeholder="cth: Bapak, Ibu, Kakak, Sarah…"
               required
-              className="w-full bg-brand-midnight border border-white/10 text-white p-3 rounded-lg outline-none focus:border-brand-gold/50 transition-colors placeholder-white/20 font-sans text-sm"
+              autoComplete="name"
+              className="w-full bg-brand-midnight border border-white/10 text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-brand-gold/30 focus:border-brand-gold/50 transition-all placeholder-white/20 font-sans text-sm"
             />
           </div>
         )}
@@ -117,9 +118,11 @@ export default function LoginForm() {
           <input
             type="email"
             name="email"
-            placeholder="nama@email.com"
+            placeholder="nama@email.com…"
             required
-            className="w-full bg-brand-midnight border border-white/10 text-white p-3 rounded-lg outline-none focus:border-brand-gold/50 transition-colors placeholder-white/20 font-mono text-sm"
+            autoComplete="email"
+            spellCheck={false}
+            className="w-full bg-brand-midnight border border-white/10 text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-brand-gold/30 focus:border-brand-gold/50 transition-all placeholder-white/20 font-mono text-sm"
           />
         </div>
 
@@ -133,7 +136,8 @@ export default function LoginForm() {
             placeholder="••••••••"
             required
             minLength={6}
-            className="w-full bg-brand-midnight border border-white/10 text-white p-3 rounded-lg outline-none focus:border-brand-gold/50 transition-colors placeholder-white/20 font-mono text-sm"
+            autoComplete="current-password"
+            className="w-full bg-brand-midnight border border-white/10 text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-brand-gold/30 focus:border-brand-gold/50 transition-all placeholder-white/20 font-mono text-sm"
           />
         </div>
 
@@ -148,7 +152,7 @@ export default function LoginForm() {
               <button
                 type="button"
                 onClick={() => setFamilyMode("create")}
-                className={`py-2 px-3 text-xs rounded-lg border font-medium transition-all ${
+                className={`py-2 px-3 text-xs rounded-lg border font-medium transition-all focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:outline-none ${
                   familyMode === "create"
                     ? "bg-brand-gold/10 border-brand-gold text-brand-gold"
                     : "bg-brand-midnight border-white/5 text-brand-muted hover:text-white"
@@ -159,7 +163,7 @@ export default function LoginForm() {
               <button
                 type="button"
                 onClick={() => setFamilyMode("join")}
-                className={`py-2 px-3 text-xs rounded-lg border font-medium transition-all ${
+                className={`py-2 px-3 text-xs rounded-lg border font-medium transition-all focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:outline-none ${
                   familyMode === "join"
                     ? "bg-brand-gold/10 border-brand-gold text-brand-gold"
                     : "bg-brand-midnight border-white/5 text-brand-muted hover:text-white"
@@ -177,9 +181,9 @@ export default function LoginForm() {
                 <input
                   type="text"
                   name="familyName"
-                  placeholder="cth: Keluarga Adhi"
+                  placeholder="cth: Keluarga Adhi…"
                   required={familyMode === "create"}
-                  className="w-full bg-brand-midnight border border-white/10 text-white p-3 rounded-lg outline-none focus:border-brand-gold/50 transition-colors placeholder-white/20 font-sans text-sm"
+                  className="w-full bg-brand-midnight border border-white/10 text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-brand-gold/30 focus:border-brand-gold/50 transition-all placeholder-white/20 font-sans text-sm"
                 />
               </div>
             ) : (
@@ -190,9 +194,10 @@ export default function LoginForm() {
                 <input
                   type="text"
                   name="inviteCode"
-                  placeholder="cth: ADHI-7798"
+                  placeholder="cth: ADHI-7798…"
                   required={familyMode === "join"}
-                  className="w-full bg-brand-midnight border border-white/10 text-white p-3 rounded-lg outline-none focus:border-brand-gold/50 transition-colors placeholder-white/20 font-mono text-sm"
+                  spellCheck={false}
+                  className="w-full bg-brand-midnight border border-white/10 text-white p-3 rounded-lg outline-none focus:ring-2 focus:ring-brand-gold/30 focus:border-brand-gold/50 transition-all placeholder-white/20 font-mono text-sm"
                 />
               </div>
             )}
@@ -202,7 +207,7 @@ export default function LoginForm() {
         <button
           type="submit"
           disabled={isLoading}
-          className="w-full bg-brand-gold hover:bg-brand-gold-muted text-brand-midnight py-3 rounded-lg font-medium transition-all transform hover:-translate-y-0.5 active:scale-95 shadow-[0_4px_20px_rgba(246,224,181,0.15)] flex items-center justify-center gap-2 mt-4 cursor-pointer"
+          className="w-full bg-brand-gold hover:bg-brand-gold-muted text-brand-midnight py-3 rounded-lg font-medium transition-all transform hover:-translate-y-0.5 active:scale-95 shadow-[0_4px_20px_rgba(246,224,181,0.15)] flex items-center justify-center gap-2 mt-4 cursor-pointer focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-offset-2 focus-visible:ring-offset-brand-midnight outline-none"
         >
           {isLoading ? (
             <span className="w-5 h-5 border-2 border-brand-midnight border-t-transparent rounded-full animate-spin"></span>
