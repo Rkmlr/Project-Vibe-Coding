@@ -196,6 +196,20 @@ ALTER TABLE public.envelopes ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.transactions ENABLE ROW LEVEL SECURITY;
 ALTER TABLE public.audit_logs ENABLE ROW LEVEL SECURITY;
 
+-- E. Kebijakan Keamanan untuk Tabel `audit_logs` (Hanya Admin)
+-- Drop existing policies if they exist to prevent 'already exists' errors on re-run
+DROP POLICY IF EXISTS select_same_family_profiles ON public.profiles;
+DROP POLICY IF EXISTS update_own_profile ON public.profiles;
+DROP POLICY IF EXISTS admin_update_profiles ON public.profiles;
+DROP POLICY IF EXISTS select_own_family ON public.families;
+DROP POLICY IF EXISTS insert_new_family ON public.families;
+DROP POLICY IF EXISTS admin_update_family ON public.families;
+DROP POLICY IF EXISTS select_family_envelopes ON public.envelopes;
+DROP POLICY IF EXISTS admin_manage_envelopes ON public.envelopes;
+DROP POLICY IF EXISTS select_family_transactions ON public.transactions;
+DROP POLICY IF EXISTS insert_family_transactions ON public.transactions;
+DROP POLICY IF EXISTS select_family_audit_logs ON public.audit_logs;
+
 -- A. Kebijakan Keamanan untuk Tabel `profiles`
 CREATE POLICY select_same_family_profiles ON public.profiles 
     FOR SELECT USING (family_id = public.get_user_family_id() OR id = auth.uid());
