@@ -40,6 +40,7 @@ CREATE TABLE IF NOT EXISTS public.envelopes (
     balance NUMERIC DEFAULT 0 NOT NULL,
     limit_amount NUMERIC NOT NULL,
     category TEXT CHECK (category IN ('NEEDS', 'WANTS', 'SAVINGS')) NOT NULL,
+    assigned_to UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -232,7 +233,7 @@ CREATE POLICY admin_update_family ON public.families
 
 -- C. Kebijakan Keamanan untuk Tabel `envelopes`
 CREATE POLICY select_family_envelopes ON public.envelopes 
-    FOR SELECT USING (family_id = public.get_user_family_id());
+    FOR SELECT USING (family_id = public.get_user_family_id() AND (public.is_user_admin() OR assigned_to IS NULL OR assigned_to = auth.uid()));
 
 CREATE POLICY admin_manage_envelopes ON public.envelopes 
     FOR ALL USING (family_id = public.get_user_family_id() AND public.is_user_admin());

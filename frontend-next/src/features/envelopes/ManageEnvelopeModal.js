@@ -9,11 +9,13 @@ export default function ManageEnvelopeModal({
   mode = "add", // "add", "edit", "delete"
   envelope = null,
   envelopes = [],
+  members = [],
   onSuccess,
 }) {
   const [name, setName] = useState("");
   const [limit, setLimit] = useState("");
   const [category, setCategory] = useState("NEEDS");
+  const [assignedTo, setAssignedTo] = useState("");
   const [reallocateToId, setReallocateToId] = useState("");
   const [error, setError] = useState("");
   const [isLoading, setIsLoading] = useState(false);
@@ -23,10 +25,12 @@ export default function ManageEnvelopeModal({
       setName(envelope.name);
       setLimit(envelope.limit_amount ? envelope.limit_amount.toString() : envelope.limit ? envelope.limit.toString() : "");
       setCategory(envelope.category || "NEEDS");
+      setAssignedTo(envelope.assigned_to || "");
     } else {
       setName("");
       setLimit("");
       setCategory("NEEDS");
+      setAssignedTo("");
       setReallocateToId("");
     }
     setError("");
@@ -42,9 +46,9 @@ export default function ManageEnvelopeModal({
     try {
       let res;
       if (mode === "add") {
-        res = await createEnvelope(name, limit, category);
+        res = await createEnvelope(name, limit, category, assignedTo || null);
       } else if (mode === "edit") {
-        res = await updateEnvelope(envelope.id, name, limit, category);
+        res = await updateEnvelope(envelope.id, name, limit, category, assignedTo || null);
       } else if (mode === "delete") {
         res = await deleteEnvelope(envelope.id, reallocateToId || null);
       }
@@ -151,6 +155,24 @@ export default function ManageEnvelopeModal({
                     required
                   />
                 </div>
+              </div>
+
+              <div>
+                <label className="block text-xs font-medium text-brand-muted mb-1.5 uppercase tracking-wider font-mono">Delegasikan Akses (Opsional)</label>
+                <select
+                  value={assignedTo}
+                  onChange={(e) => setAssignedTo(e.target.value)}
+                  className="w-full bg-brand-slate border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-brand-gold/50 focus:ring-1 focus:ring-brand-gold/50 transition-all text-sm cursor-pointer"
+                >
+                  <option value="">Semua Anggota Keluarga (Publik)</option>
+                  {members
+                    .filter(m => m.role !== "admin")
+                    .map((m) => (
+                      <option key={m.id} value={m.id}>
+                        {m.display_name} (Anak)
+                      </option>
+                    ))}
+                </select>
               </div>
             </>
           )}
