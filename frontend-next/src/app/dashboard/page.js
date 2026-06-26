@@ -8,6 +8,7 @@ import AtomicLedger from "@/features/transactions/AtomicLedger";
 import MonthlyInsights from "@/features/insights/MonthlyInsights";
 import MilestoneTracker from "@/features/insights/MilestoneTracker";
 import ActivityLogs from "@/features/audit-logs/ActivityLogs";
+import FinancialCharts from "@/features/insights/FinancialCharts";
 
 export default function DashboardPage() {
   const [role, setRole] = useState("member");
@@ -205,6 +206,10 @@ export default function DashboardPage() {
             <div className="lg:col-span-2 space-y-10">
               <EnvelopeGrid envelopes={envelopes} role={role} onSuccess={fetchData} />
               
+              <div className="pt-6 border-t border-white/5">
+                <FinancialCharts envelopes={envelopes} transactions={transactions} />
+              </div>
+
               <div className="pt-6 border-t border-white/5">
                 <h3 className="font-display text-xl text-white mb-4">Catat Transaksi Baru</h3>
                 <TransactionSlip envelopes={envelopes} role={role} onTransactionSuccess={fetchData} />
