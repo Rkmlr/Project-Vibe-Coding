@@ -92,22 +92,22 @@ export default function Home() {
               {/* Audit Log Visualization */}
               <div className="space-y-4">
                 <h3 className="text-sm font-medium text-brand-muted uppercase tracking-wider mb-2">Log Keamanan Atomik</h3>
-                <div className="space-y-3 font-mono text-xs opacity-90 h-full">
-                  <div className="flex flex-col justify-center h-full space-y-3">
+                <div className="space-y-3 font-mono text-xs opacity-90">
+                  <div className="flex flex-col space-y-3">
                     <div className="flex justify-between items-center bg-brand-slate/30 p-3 rounded border border-white/5">
-                      <span className="text-brand-sage">TX_7F9A2</span>
-                      <span className="text-white truncate mx-2">SELECT … FOR UPDATE</span>
-                      <span className="text-brand-gold shrink-0">LOCKED</span>
+                      <span className="text-brand-sage shrink-0">TX_7F9A2</span>
+                      <span className="text-white truncate mx-3 flex-1 text-left">SELECT … FOR UPDATE</span>
+                      <span className="text-brand-gold shrink-0 text-right">LOCKED</span>
                     </div>
                     <div className="flex justify-between items-center bg-brand-slate/30 p-3 rounded border border-white/5">
-                      <span className="text-brand-sage">TX_7F9A2</span>
-                      <span className="text-white truncate mx-2">UPDATE envelopes SET balance = balance - 15</span>
-                      <span className="text-brand-gold shrink-0">SUCCESS</span>
+                      <span className="text-brand-sage shrink-0">TX_7F9A2</span>
+                      <span className="text-white truncate mx-3 flex-1 text-left">UPDATE envelopes SET balance = balance - 15</span>
+                      <span className="text-brand-gold shrink-0 text-right">SUCCESS</span>
                     </div>
                     <div className="flex justify-between items-center bg-brand-slate/30 p-3 rounded border border-white/5">
-                      <span className="text-brand-sage">TX_7F9A2</span>
-                      <span className="text-white truncate mx-2">INSERT INTO activity_logs</span>
-                      <span className="text-brand-gold shrink-0">COMMITTED</span>
+                      <span className="text-brand-sage shrink-0">TX_7F9A2</span>
+                      <span className="text-white truncate mx-3 flex-1 text-left">INSERT INTO activity_logs</span>
+                      <span className="text-brand-gold shrink-0 text-right">COMMITTED</span>
                     </div>
                   </div>
                 </div>
