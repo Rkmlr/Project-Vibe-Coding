@@ -162,7 +162,7 @@ export default function DashboardPage() {
           ) : (
             <>
               <h1 className="font-display text-3xl text-white mb-2">Selamat datang kembali, {userName}</h1>
-              <p className="text-brand-muted text-lg">Catat pengeluaran harian Anda dengan presisi.</p>
+              <p className="text-brand-muted text-lg">Kelola pengeluaran harian Anda.</p>
             </>
           )}
         </div>
@@ -207,7 +207,7 @@ export default function DashboardPage() {
           {/* Right Column: Actions & Recent Activity */}
           <div className="space-y-8">
             <div className="p-6 glass-card rounded-xl border border-white/5">
-              <h2 className="font-display text-xl text-white mb-4">Catat Transaksi Baru</h2>
+              <h2 className="font-display text-xl text-white mb-4">Tambah Transaksi</h2>
               <TransactionSlip envelopes={envelopes} role={role} onTransactionSuccess={fetchData} />
             </div>
             
@@ -226,7 +226,7 @@ export default function DashboardPage() {
           
           <div className="space-y-8">
             <div>
-              <h2 className="font-display text-xl text-white mb-4">Akses Amplop Saya</h2>
+              <h2 className="font-display text-xl text-white mb-4">Amplop Saya</h2>
               <div className="flex flex-col gap-3">
                 {envelopes.map(env => (
                   <div key={env.id} className="glass-card p-4 rounded-xl border border-white/5 flex justify-between items-center">
@@ -241,7 +241,7 @@ export default function DashboardPage() {
                 ))}
                 {envelopes.length === 0 && (
                   <div className="p-6 text-center text-brand-muted text-xs italic glass-card border border-white/5 rounded-xl">
-                    Belum ada amplop anggaran yang tersedia.
+                    Belum ada amplop anggaran. Minta pengelola untuk menambahkan amplop.
                   </div>
                 )}
               </div>
