@@ -28,6 +28,8 @@ export default function LoginForm() {
       if (res && res.error) {
         setError(res.error);
         setIsLoading(false);
+      } else if (res && res.success) {
+        window.location.href = "/dashboard";
       }
     } catch (err) {
       setError(err.message || "Terjadi kesalahan sistem.");

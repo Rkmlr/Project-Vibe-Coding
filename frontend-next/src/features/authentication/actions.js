@@ -20,7 +20,7 @@ export async function login(formData) {
     return { error: error.message };
   }
 
-  redirect("/dashboard");
+  return { success: true };
 }
 
 /**
@@ -83,5 +83,5 @@ export async function signup(state, formData) {
     }
   }
 
-  redirect("/dashboard");
+  return { success: true };
 }
