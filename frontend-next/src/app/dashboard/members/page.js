@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client";
 
 export default function MembersPage() {
   const router = useRouter();
@@ -13,48 +12,31 @@ export default function MembersPage() {
   const [error, setError] = useState("");
 
   const fetchMembers = async () => {
-    const supabase = createClient();
-    const { data: { user } } = await supabase.auth.getUser();
-    if (!user) {
-      router.push("/");
-      return;
-    }
-
-    const { data: profile } = await supabase
-      .from("profiles")
-      .select("role, family_id")
-      .eq("id", user.id)
-      .single();
-
-    if (!profile || profile.role !== "admin") {
-      router.push("/dashboard");
-      return;
-    }
-
-    setRole(profile.role);
-
-    if (profile.family_id) {
-      // Fetch family invite code
-      const { data: family } = await supabase
-        .from("families")
-        .select("invite_code")
-        .eq("id", profile.family_id)
-        .single();
-      if (family) {
-        setInviteCode(family.invite_code);
+    try {
+      // Fetch members from API
+      const res = await fetch("/api/members");
+      if (res.status === 401) {
+        router.push("/");
+        return;
       }
-
-      // Fetch family profiles
-      const { data: profiles, error: pError } = await supabase
-        .from("profiles")
-        .select("id, display_name, email, role, created_at")
-        .eq("family_id", profile.family_id)
-        .order("role", { ascending: true })
-        .order("display_name", { ascending: true });
-
-      if (!pError && profiles) {
-        setMembers(profiles);
+      if (res.status === 403) {
+        router.push("/dashboard");
+        return;
       }
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+
+      setRole("admin"); // If we get here, we are admin (API enforces this)
+      setMembers(data.data || []);
+
+      // Fetch invite code from settings API
+      const settingsRes = await fetch("/api/settings");
+      if (settingsRes.ok) {
+        const settingsData = await settingsRes.json();
+        setInviteCode(settingsData.data?.invite_code || "");
+      }
+    } catch (err) {
+      setError(err.message);
     }
   };
 
@@ -65,16 +47,17 @@ export default function MembersPage() {
 
   const handleRemoveMember = async (id) => {
     setError("");
-    const supabase = createClient();
-    const { error: updateError } = await supabase
-      .from("profiles")
-      .update({ family_id: null })
-      .eq("id", id);
-
-    if (updateError) {
-      setError(updateError.message);
-    } else {
-      setMembers(members.filter(m => m.id !== id));
+    try {
+      const res = await fetch("/api/members", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ member_id: id }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
+      setMembers(members.filter((m) => m.id !== id));
+    } catch (err) {
+      setError(err.message);
     }
   };
 
@@ -128,7 +111,7 @@ export default function MembersPage() {
                           {m.role === 'admin' ? 'Orang Tua' : 'Anak'}
                         </span>
                       </div>
-                      <div className="text-sm text-brand-muted mt-1">{m.email}</div>
+                      {m.email && <div className="text-sm text-brand-muted mt-1">{m.email}</div>}
                     </div>
                   </div>
 

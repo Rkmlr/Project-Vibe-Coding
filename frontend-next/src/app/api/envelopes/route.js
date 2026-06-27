@@ -91,13 +91,11 @@ export async function POST(request) {
     // 3. Log Audit
     await supabase.from("audit_logs").insert({
       family_id: profile.family_id,
-      user_id: user.id,
+      profile_id: user.id,
       action: "CREATE_ENVELOPES",
       target_table: "envelopes",
-      target_row_id: newEnvelope.id,
-      old_data: null,
-      new_data: newEnvelope,
-      description: `Membuat amplop anggaran baru: ${name}`
+      old_values: null,
+      new_values: { ...newEnvelope, _description: `Membuat amplop anggaran baru: ${name}` },
     });
 
     return NextResponse.json({ success: true, data: newEnvelope, message: "Amplop berhasil dibuat" }, { status: 201 });

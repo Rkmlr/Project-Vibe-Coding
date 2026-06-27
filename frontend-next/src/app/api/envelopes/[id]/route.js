@@ -1,6 +1,45 @@
 import { NextResponse } from "next/server";
 import { createApiClient } from "@/utils/supabase/api";
 
+export async function GET(request, { params }) {
+  try {
+    const supabase = await createApiClient(request);
+
+    const { data: { user }, error: authError } = await supabase.auth.getUser();
+    if (authError || !user) {
+      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+    }
+
+    const { data: profile } = await supabase
+      .from("profiles")
+      .select("family_id")
+      .eq("id", user.id)
+      .single();
+
+    if (!profile || !profile.family_id) {
+      return NextResponse.json({ error: "No family associated" }, { status: 404 });
+    }
+
+    const { id } = await params;
+
+    const { data: envelope, error: fetchError } = await supabase
+      .from("envelopes")
+      .select("*")
+      .eq("id", id)
+      .eq("family_id", profile.family_id)
+      .single();
+
+    if (fetchError || !envelope) {
+      return NextResponse.json({ error: "Envelope not found" }, { status: 404 });
+    }
+
+    return NextResponse.json({ success: true, data: envelope }, { status: 200 });
+
+  } catch (err) {
+    return NextResponse.json({ error: err.message || "Internal server error" }, { status: 500 });
+  }
+}
+
 export async function PUT(request, { params }) {
   try {
     const supabase = await createApiClient(request);
@@ -57,13 +96,11 @@ export async function PUT(request, { params }) {
     // 3. Log Audit
     await supabase.from("audit_logs").insert({
       family_id: profile.family_id,
-      user_id: user.id,
+      profile_id: user.id,
       action: "UPDATE_ENVELOPES",
       target_table: "envelopes",
-      target_row_id: id,
-      old_data: oldEnvelope,
-      new_data: updatedEnvelope,
-      description: `Mengubah data amplop: ${updatedEnvelope.name}`
+      old_values: oldEnvelope,
+      new_values: { ...updatedEnvelope, _description: `Mengubah data amplop: ${updatedEnvelope.name}` },
     });
 
     return NextResponse.json({ success: true, data: updatedEnvelope, message: "Amplop berhasil diubah" }, { status: 200 });
@@ -181,13 +218,11 @@ export async function DELETE(request, { params }) {
     // 3. Log Audit
     await supabase.from("audit_logs").insert({
       family_id: profile.family_id,
-      user_id: user.id,
+      profile_id: user.id,
       action: "DELETE_ENVELOPES",
       target_table: "envelopes",
-      target_row_id: id,
-      old_data: envelope,
-      new_data: null,
-      description: `Menghapus amplop: ${envelope.name}`
+      old_values: { ...envelope, _description: `Menghapus amplop: ${envelope.name}` },
+      new_values: null,
     });
 
     return NextResponse.json({ success: true, message: "Amplop berhasil dihapus" }, { status: 200 });

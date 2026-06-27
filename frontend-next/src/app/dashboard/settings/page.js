@@ -2,12 +2,10 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client";
 
 export default function SettingsPage() {
   const router = useRouter();
   const [role, setRole] = useState(null);
-  const [familyId, setFamilyId] = useState(null);
   const [familyName, setFamilyName] = useState("");
   const [baseCurrency, setBaseCurrency] = useState("IDR");
   const [alertLimit, setAlertLimit] = useState(15);
@@ -23,39 +21,26 @@ export default function SettingsPage() {
 
   useEffect(() => {
     const fetchSettings = async () => {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.push("/");
-        return;
-      }
-
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role, family_id")
-        .eq("id", user.id)
-        .single();
-
-      if (!profile || profile.role !== "admin") {
-        router.push("/dashboard");
-        return;
-      }
-
-      setRole(profile.role);
-      setFamilyId(profile.family_id);
-
-      if (profile.family_id) {
-        const { data: family } = await supabase
-          .from("families")
-          .select("name")
-          .eq("id", profile.family_id)
-          .single();
-
-        if (family) {
-          setFamilyName(family.name);
+      try {
+        const res = await fetch("/api/settings");
+        if (res.status === 401) {
+          router.push("/");
+          return;
         }
+        if (res.status === 403) {
+          router.push("/dashboard");
+          return;
+        }
+        const data = await res.json();
+        if (!res.ok) throw new Error(data.error);
+
+        setRole("admin"); // API enforces admin-only access
+        setFamilyName(data.data?.name || "");
+      } catch (err) {
+        setError(err.message);
+      } finally {
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     fetchSettings();
@@ -68,27 +53,16 @@ export default function SettingsPage() {
     setIsSaving(true);
 
     try {
-      const supabase = createClient();
+      const res = await fetch("/api/settings", {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ name: familyName }),
+      });
+      const data = await res.json();
+      if (!res.ok) throw new Error(data.error);
 
-      if (role !== "admin") {
-        setError("Hanya admin (Orang Tua) yang dapat memperbarui pengaturan keluarga.");
-        setIsSaving(false);
-        return;
-      }
-
-      if (familyId) {
-        const { error: updateError } = await supabase
-          .from("families")
-          .update({ name: familyName })
-          .eq("id", familyId);
-
-        if (updateError) {
-          throw new Error(updateError.message);
-        }
-
-        setIsSaved(true);
-        setTimeout(() => setIsSaved(false), 3000);
-      }
+      setIsSaved(true);
+      setTimeout(() => setIsSaved(false), 3000);
     } catch (err) {
       setError(err.message || "Gagal menyimpan pengaturan.");
     } finally {
