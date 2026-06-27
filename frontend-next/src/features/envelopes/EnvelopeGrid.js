@@ -67,7 +67,7 @@ export default function EnvelopeGrid({ envelopes = [], role = "member", members 
       </div>
 
       {/* Render Envelopes by Category */}
-      <div className="space-y-8">
+      <div className="space-y-8 max-h-[500px] overflow-y-auto pr-4 scrollbar-thin scrollbar-thumb-white/10 scrollbar-track-transparent">
         {Object.entries(categories).map(([catKey, cat]) => {
           if (cat.envelopes.length === 0) return null;
 
@@ -78,7 +78,7 @@ export default function EnvelopeGrid({ envelopes = [], role = "member", members 
                 {cat.label}
               </h3>
               
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+              <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-5">
                 {cat.envelopes.map((env) => {
                   const balance = parseFloat(env.balance || 0);
                   const limit = parseFloat(env.limit_amount || env.limit || 0);

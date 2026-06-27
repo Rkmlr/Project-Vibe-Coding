@@ -89,12 +89,13 @@ export default function TransactionSlip({ envelopes = [], role = "member", onTra
   };
 
   return (
-    <div className="glass-card rounded-2xl overflow-hidden border border-white/10 bg-white/5 relative shadow-xl md:flex w-full">
+    <div className="glass-card rounded-2xl overflow-hidden border border-white/10 bg-brand-slate relative shadow-2xl md:flex w-full">
       {/* Subtle Background Accent */}
-      <div className="absolute top-0 right-0 w-64 h-64 bg-brand-gold/5 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute top-0 right-0 w-64 h-64 bg-brand-gold/10 rounded-full blur-3xl pointer-events-none"></div>
+      <div className="absolute bottom-0 left-0 w-64 h-64 bg-brand-sage/5 rounded-full blur-3xl pointer-events-none"></div>
       
       {/* Input Area */}
-      <div className="p-6 md:w-1/2 flex flex-col justify-center border-b md:border-b-0 md:border-r border-white/5 relative z-10">
+      <div className="p-8 md:w-[55%] flex flex-col justify-center border-b md:border-b-0 md:border-r border-white/5 relative z-10">
         
         {/* Toggle Type - Only show for Admin (Orang Tua) */}
         {isAdmin ? (
@@ -130,15 +131,18 @@ export default function TransactionSlip({ envelopes = [], role = "member", onTra
           </div>
         )}
 
-        <div className="flex items-end gap-2 mb-6 border-b border-white/5 pb-2">
-          <span className="text-2xl text-brand-muted font-mono pb-1">Rp</span>
-          <input 
-            type="text" 
-            readOnly
-            value={amount ? Number(amount).toLocaleString('id-ID') : "0"}
-            className="bg-transparent text-4xl md:text-5xl text-white font-mono font-medium outline-none w-full placeholder-white/20 tabular-nums focus-visible:ring-2 focus-visible:ring-brand-gold rounded-md px-2"
-            placeholder="0"
-          />
+        <div className="flex flex-col mb-6">
+          <label className="text-[10px] text-brand-muted mb-2 uppercase tracking-widest font-mono">Nominal Transaksi</label>
+          <div className="flex items-center gap-3 bg-white/5 border border-white/10 rounded-xl p-4 shadow-inner">
+            <span className="text-2xl text-brand-gold font-mono font-medium">Rp</span>
+            <input 
+              type="text" 
+              readOnly
+              value={amount ? Number(amount).toLocaleString('id-ID') : "0"}
+              className="bg-transparent text-4xl md:text-5xl text-white font-mono font-semibold outline-none w-full placeholder-white/20 tabular-nums focus-visible:ring-2 focus-visible:ring-brand-gold rounded-md px-2 truncate"
+              placeholder="0"
+            />
+          </div>
         </div>
 
         <div className="space-y-4">
@@ -198,14 +202,14 @@ export default function TransactionSlip({ envelopes = [], role = "member", onTra
       </div>
 
       {/* Numpad & Submit */}
-      <div className="p-6 md:w-1/2 bg-brand-slate/30 relative z-10 flex flex-col justify-between">
-        <div className="grid grid-cols-3 gap-3 flex-1 mb-6">
+      <div className="p-8 md:w-[45%] bg-black/20 relative z-10 flex flex-col justify-between">
+        <div className="grid grid-cols-3 gap-3 flex-1 mb-8">
           {[1, 2, 3, 4, 5, 6, 7, 8, 9, "000", 0].map((num, i) => (
             <button 
               key={i} 
               type="button"
               onClick={() => handleNumberClick(num.toString())}
-              className="bg-white/5 hover:bg-white/10 border border-white/5 rounded-lg py-4 text-xl text-white font-mono transition-colors active:scale-95 cursor-pointer"
+              className="bg-white/5 hover:bg-white/10 border border-white/10 rounded-xl py-4 text-2xl text-white font-mono font-medium transition-all active:scale-95 cursor-pointer shadow-sm hover:shadow-md focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
             >
               {num}
             </button>

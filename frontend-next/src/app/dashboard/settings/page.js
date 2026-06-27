@@ -108,11 +108,13 @@ export default function SettingsPage() {
   const isAdmin = role === "admin";
 
   return (
-    <div className="max-w-3xl mx-auto space-y-8 animate-fade-in-up">
-      <div>
-        <h1 className="font-display text-4xl text-white mb-2">Pengaturan Sistem</h1>
-        <p className="text-brand-muted text-lg">Konfigurasi preferensi keluarga, batasan peringatan, dan pemberitahuan.</p>
-      </div>
+    <div className="max-w-4xl mx-auto space-y-8 animate-fade-in-up">
+      <header className="flex flex-col gap-4">
+        <div>
+          <h1 className="font-display text-4xl text-white mb-2 text-balance">Pengaturan Sistem</h1>
+          <p className="text-brand-muted text-lg">Konfigurasi preferensi keluarga, batasan peringatan, dan pemberitahuan.</p>
+        </div>
+      </header>
 
       {isSaved && (
         <div className="bg-brand-sage/10 border border-brand-sage/30 text-brand-sage p-4 rounded-xl flex items-center justify-between transition-opacity animate-in fade-in duration-200">
@@ -129,32 +131,32 @@ export default function SettingsPage() {
         </div>
       )}
 
-      <form onSubmit={handleSaveSettings} className="space-y-8">
+      <form onSubmit={handleSaveSettings} className="space-y-6">
         
         {/* Family Profile Configuration */}
-        <div className="glass-card rounded-2xl border border-white/5 p-6 shadow-2xl space-y-5">
-          <h2 className="text-xl font-display text-white border-b border-white/5 pb-3">Profil Keluarga</h2>
+        <div className="glass-card bg-white/5 rounded-2xl border border-white/10 p-8 shadow-2xl space-y-6 relative overflow-hidden">
+          <h2 className="text-2xl font-display text-white border-b border-white/10 pb-4">Profil Keluarga</h2>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
             <div>
-              <label className="block text-xs text-brand-muted mb-1.5 font-medium">Nama Grup Keluarga</label>
+              <label className="block text-xs font-mono uppercase tracking-widest text-brand-muted mb-2 font-medium">Nama Grup Keluarga</label>
               <input
                 type="text"
                 value={familyName}
                 onChange={(e) => setFamilyName(e.target.value)}
                 disabled={!isAdmin}
-                className="w-full bg-white/5 border border-white/10 rounded-lg px-4 py-2.5 text-white placeholder-brand-muted focus:outline-none focus:border-brand-gold/50 focus:ring-1 focus:ring-brand-gold/50 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                className="w-full bg-brand-slate/50 border border-white/10 rounded-xl px-5 py-3 text-white placeholder-white/20 focus:outline-none focus:border-brand-gold/50 focus:ring-1 focus:ring-brand-gold/50 transition-all text-sm disabled:opacity-50 disabled:cursor-not-allowed"
                 required
               />
             </div>
             
             <div>
-              <label className="block text-xs text-brand-muted mb-1.5 font-medium">Mata Uang Utama</label>
+              <label className="block text-xs font-mono uppercase tracking-widest text-brand-muted mb-2 font-medium">Mata Uang Utama</label>
               <select
                 value={baseCurrency}
                 onChange={(e) => setBaseCurrency(e.target.value)}
                 disabled={!isAdmin}
-                className="w-full bg-brand-slate border border-white/10 rounded-lg px-4 py-2.5 text-white focus:outline-none focus:border-brand-gold/50 focus:ring-1 focus:ring-brand-gold/50 transition-all text-sm appearance-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
+                className="w-full bg-brand-slate/50 border border-white/10 rounded-xl px-5 py-3 text-white focus:outline-none focus:border-brand-gold/50 focus:ring-1 focus:ring-brand-gold/50 transition-all text-sm appearance-none disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
               >
                 <option value="IDR">IDR (Rupiah Indonesia)</option>
                 <option value="USD">USD (Dolar Amerika)</option>
@@ -165,13 +167,13 @@ export default function SettingsPage() {
         </div>
 
         {/* Warning & Alerts Configuration */}
-        <div className="glass-card rounded-2xl border border-white/5 p-6 shadow-2xl space-y-5">
-          <h2 className="text-xl font-display text-white border-b border-white/5 pb-3">Batasan & Peringatan Anggaran</h2>
+        <div className="glass-card bg-white/5 rounded-2xl border border-white/10 p-8 shadow-2xl space-y-6">
+          <h2 className="text-2xl font-display text-white border-b border-white/10 pb-4">Batasan & Peringatan Anggaran</h2>
           
           <div>
-            <label className="block text-xs text-brand-muted mb-1.5 font-medium flex justify-between">
-              <span>Batas Persentase Warning: {alertLimit}%</span>
-              <span>Default: 15%</span>
+            <label className="block text-xs font-mono uppercase tracking-widest text-brand-muted mb-4 font-medium flex justify-between">
+              <span>Batas Persentase Warning: <span className="text-brand-gold text-sm">{alertLimit}%</span></span>
+              <span className="text-white/40">Default: 15%</span>
             </label>
             <input
               type="range"
@@ -181,80 +183,80 @@ export default function SettingsPage() {
               value={alertLimit}
               onChange={(e) => setAlertLimit(Number(e.target.value))}
               disabled={!isAdmin}
-              className="w-full h-1.5 bg-brand-midnight rounded-lg appearance-none cursor-pointer accent-brand-gold disabled:opacity-50"
+              className="w-full h-2 bg-brand-midnight rounded-lg appearance-none cursor-pointer accent-brand-gold disabled:opacity-50"
             />
-            <p className="text-[11px] text-brand-muted mt-2">
-              Sistem akan memicu status <span className="text-red-400 font-mono">Warning</span> jika saldo tersisa di amplop bernilai kurang dari {alertLimit}% dari batas limit bulanannya.
+            <p className="text-sm text-brand-muted mt-4 bg-brand-slate/40 p-4 rounded-xl border border-white/5 leading-relaxed">
+              Sistem akan memicu status <span className="text-brand-gold font-mono uppercase tracking-widest text-[10px] px-2 py-0.5 rounded border border-brand-gold/30 bg-brand-gold/10 mx-1">Warning</span> jika saldo tersisa di amplop bernilai kurang dari <strong className="text-white">{alertLimit}%</strong> dari batas limit bulanannya.
             </p>
           </div>
         </div>
 
         {/* Notification Settings */}
-        <div className="glass-card rounded-2xl border border-white/5 p-6 shadow-2xl space-y-5">
-          <h2 className="text-xl font-display text-white border-b border-white/5 pb-3">Pengaturan Pemberitahuan</h2>
+        <div className="glass-card bg-white/5 rounded-2xl border border-white/10 p-8 shadow-2xl space-y-6">
+          <h2 className="text-2xl font-display text-white border-b border-white/10 pb-4">Pengaturan Pemberitahuan</h2>
           
-          <div className="space-y-4">
-            <div className="flex items-center justify-between">
+          <div className="space-y-2">
+            <div className="flex items-center justify-between p-4 hover:bg-white/[0.02] rounded-xl transition-colors">
               <div>
-                <h4 className="text-sm font-medium text-white">Notifikasi Batas Amplop (Warning)</h4>
-                <p className="text-xs text-brand-muted mt-0.5">Kirim email/dorong notifikasi saat amplop menipis.</p>
+                <h4 className="text-base font-medium text-white">Notifikasi Batas Amplop (Warning)</h4>
+                <p className="text-sm text-brand-muted mt-1">Kirim peringatan ke seluruh anggota keluarga saat amplop menipis.</p>
               </div>
               <input
                 type="checkbox"
                 checked={notifWarning}
                 onChange={(e) => setNotifWarning(e.target.checked)}
                 disabled={!isAdmin}
-                className="w-5 h-5 accent-brand-gold rounded border-white/10 bg-white/5 disabled:opacity-50"
+                className="w-6 h-6 accent-brand-gold rounded border-white/10 bg-white/5 disabled:opacity-50 cursor-pointer"
               />
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between p-4 hover:bg-white/[0.02] rounded-xl transition-colors">
               <div>
-                <h4 className="text-sm font-medium text-white">Laporan Ringkasan Harian</h4>
-                <p className="text-xs text-brand-muted mt-0.5">Ringkasan transaksi yang dicatat anggota setiap sore hari.</p>
+                <h4 className="text-base font-medium text-white">Laporan Ringkasan Harian</h4>
+                <p className="text-sm text-brand-muted mt-1">Rekap seluruh transaksi harian yang dicatat pada hari tersebut.</p>
               </div>
               <input
                 type="checkbox"
                 checked={notifDaily}
                 onChange={(e) => setNotifDaily(e.target.checked)}
                 disabled={!isAdmin}
-                className="w-5 h-5 accent-brand-gold rounded border-white/10 bg-white/5 disabled:opacity-50"
+                className="w-6 h-6 accent-brand-gold rounded border-white/10 bg-white/5 disabled:opacity-50 cursor-pointer"
               />
             </div>
 
-            <div className="flex items-center justify-between">
+            <div className="flex items-center justify-between p-4 hover:bg-white/[0.02] rounded-xl transition-colors">
               <div>
-                <h4 className="text-sm font-medium text-white">Analisis Cash Flow Bulanan</h4>
-                <p className="text-xs text-brand-muted mt-0.5">Kirim tips & rekomendasi realokasi saldo cerdas setiap awal bulan.</p>
+                <h4 className="text-base font-medium text-white">Analisis Cash Flow Bulanan</h4>
+                <p className="text-sm text-brand-muted mt-1">Dapatkan insight gaya belanja cerdas pada setiap awal bulan.</p>
               </div>
               <input
                 type="checkbox"
                 checked={notifMonthly}
                 onChange={(e) => setNotifMonthly(e.target.checked)}
                 disabled={!isAdmin}
-                className="w-5 h-5 accent-brand-gold rounded border-white/10 bg-white/5 disabled:opacity-50"
+                className="w-6 h-6 accent-brand-gold rounded border-white/10 bg-white/5 disabled:opacity-50 cursor-pointer"
               />
             </div>
           </div>
         </div>
 
         {/* Save & Reset Buttons */}
-        <div className="flex justify-end gap-3">
+        <div className="flex flex-col sm:flex-row justify-end gap-4 pt-4 pb-12">
           <button
             type="button"
             onClick={() => router.push("/dashboard")}
-            className="px-5 py-3 text-sm font-medium text-brand-muted hover:text-white transition-colors cursor-pointer"
+            className="px-6 py-3.5 text-sm font-medium text-brand-muted hover:text-white bg-white/5 hover:bg-white/10 rounded-xl transition-colors cursor-pointer border border-white/10"
           >
-            Kembali ke Dashboard
+            Batal & Kembali
           </button>
           {isAdmin && (
             <button
               type="submit"
               disabled={isSaving}
-              className="bg-brand-gold hover:bg-brand-gold-muted text-brand-midnight px-6 py-3 rounded-lg font-medium text-sm transition-all transform hover:-translate-y-0.5 active:scale-95 cursor-pointer flex items-center gap-2"
+              className="bg-brand-gold hover:bg-brand-gold-muted text-brand-midnight px-8 py-3.5 rounded-xl font-medium transition-all transform hover:-translate-y-0.5 active:scale-95 cursor-pointer flex items-center justify-center gap-2 shadow-[0_4px_20px_rgba(246,224,181,0.15)] disabled:opacity-50"
             >
               {isSaving ? (
-                <span className="w-4 h-4 border-2 border-brand-midnight border-t-transparent rounded-full animate-spin"></span>
+                <span className="w-5 h-5 border-2 border-brand-midnight border-t-transparent rounded-full animate-spin"></span>
               ) : (
                 "Simpan Konfigurasi"
               )}

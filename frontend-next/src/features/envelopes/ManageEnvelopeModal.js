@@ -79,7 +79,7 @@ export default function ManageEnvelopeModal({
   const currentBalance = envelope ? (envelope.balance || 0) : 0;
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center p-4">
+    <div className="fixed inset-0 z-50 flex items-start justify-center p-4 sm:pt-24 overflow-y-auto">
       {/* Backdrop */}
       <div 
         className="absolute inset-0 bg-brand-midnight/80 backdrop-blur-sm"
@@ -87,7 +87,7 @@ export default function ManageEnvelopeModal({
       ></div>
 
       {/* Modal Content */}
-      <div className="relative w-full max-w-md glass-card rounded-2xl p-6 shadow-2xl border border-white/10 animate-fade-in-up duration-200">
+      <div className="relative w-full max-w-md glass-card rounded-2xl p-6 shadow-2xl border border-white/10 animate-fade-in-up duration-200 mb-8 z-10">
         
         {/* Header */}
         <div className="flex items-center justify-between mb-6">

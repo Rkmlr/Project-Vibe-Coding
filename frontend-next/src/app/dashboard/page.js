@@ -19,6 +19,7 @@ export default function DashboardPage() {
   const [members, setMembers] = useState([]);
   const [insightAdvice, setInsightAdvice] = useState("");
   const [isLoading, setIsLoading] = useState(true);
+  const [isTxModalOpen, setIsTxModalOpen] = useState(false);
 
   const fetchData = async () => {
     try {
@@ -151,20 +152,32 @@ export default function DashboardPage() {
     <div className="space-y-12 animate-fade-in-up">
       {/* Header & Hero Section */}
       <header className="flex flex-col gap-8">
-        <div>
-          {role === "admin" ? (
-            <>
-              <h1 className="font-display text-4xl text-white mb-2 text-balance">Ledger {familyName || "Keluarga"}</h1>
-              <p className="text-brand-muted text-sm font-mono uppercase tracking-wider">
-                Kode Undangan: <span className="text-brand-gold font-bold select-all">{inviteCode}</span>
-              </p>
-            </>
-          ) : (
-            <>
-              <h1 className="font-display text-3xl text-white mb-2 text-balance">Selamat datang kembali, {userName}</h1>
-              <p className="text-brand-muted text-lg">Kelola pengeluaran harian Anda.</p>
-            </>
-          )}
+        <div className="flex flex-col md:flex-row md:items-start justify-between gap-4">
+          <div>
+            {role === "admin" ? (
+              <>
+                <h1 className="font-display text-4xl text-white mb-2 text-balance">Ledger {familyName || "Keluarga"}</h1>
+                <p className="text-brand-muted text-sm font-mono uppercase tracking-wider">
+                  Kode Undangan: <span className="text-brand-gold font-bold select-all">{inviteCode}</span>
+                </p>
+              </>
+            ) : (
+              <>
+                <h1 className="font-display text-3xl text-white mb-2 text-balance">Selamat datang kembali, {userName}</h1>
+                <p className="text-brand-muted text-lg">Kelola pengeluaran harian Anda.</p>
+              </>
+            )}
+          </div>
+          
+          <button
+            onClick={() => setIsTxModalOpen(true)}
+            className="flex items-center gap-2 bg-brand-gold hover:bg-brand-gold-muted text-brand-midnight px-5 py-2.5 rounded-xl font-medium transition-colors shadow-lg hover:shadow-brand-gold/20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold focus-visible:ring-offset-2 focus-visible:ring-offset-brand-midnight"
+          >
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+            </svg>
+            Catat Transaksi
+          </button>
         </div>
         
         {/* Hero Summaries */}
@@ -198,16 +211,8 @@ export default function DashboardPage() {
       {/* Admin Interface Layout */}
       {role === "admin" && (
         <div className="space-y-8">
-          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
-            {/* Left Column: Core Financial State */}
-            <div className="space-y-8">
-              <EnvelopeGrid envelopes={envelopes} role={role} members={members} onSuccess={fetchData} />
-            </div>
-            
-            {/* Right Column: Actions */}
-            <div className="space-y-8">
-              <TransactionSlip envelopes={envelopes} role={role} onTransactionSuccess={fetchData} />
-            </div>
+          <div className="space-y-8">
+            <EnvelopeGrid envelopes={envelopes} role={role} members={members} onSuccess={fetchData} />
           </div>
 
           {/* Full Width: Financial Analysis */}
@@ -224,7 +229,6 @@ export default function DashboardPage() {
       {role === "member" && (
         <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
           <div className="space-y-8">
-            <TransactionSlip envelopes={envelopes} role={role} onTransactionSuccess={fetchData} />
             
             <div className="glass-card p-6 md:p-8 rounded-2xl border border-white/10">
               <h2 className="font-display text-2xl text-white mb-6 text-balance">Amplop Saya</h2>
@@ -251,6 +255,35 @@ export default function DashboardPage() {
           
           <div className="space-y-8">
             <AtomicLedger transactions={mappedTransactions} title="Aktivitas Pribadi" limit={10} />
+          </div>
+        </div>
+      )}
+
+      {/* Transaction Modal */}
+      {isTxModalOpen && (
+        <div className="fixed inset-0 z-50 flex items-start justify-center p-4 sm:pt-24 overflow-y-auto">
+          {/* Backdrop */}
+          <div 
+            className="fixed inset-0 bg-brand-midnight/80 backdrop-blur-sm animate-in fade-in duration-200"
+            onClick={() => setIsTxModalOpen(false)}
+          ></div>
+          
+          {/* Modal Content */}
+          <div className="relative w-full max-w-3xl animate-in zoom-in-95 duration-200 z-10 mb-8">
+            <button 
+              onClick={() => setIsTxModalOpen(false)}
+              className="absolute top-6 right-6 w-8 h-8 rounded-full bg-white/10 flex items-center justify-center hover:bg-white/20 transition-colors z-20 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
+            >
+              <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" className="h-4 w-4 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" /></svg>
+            </button>
+            <TransactionSlip 
+              envelopes={envelopes} 
+              role={role} 
+              onTransactionSuccess={() => { 
+                fetchData(); 
+                setIsTxModalOpen(false); 
+              }} 
+            />
           </div>
         </div>
       )}
