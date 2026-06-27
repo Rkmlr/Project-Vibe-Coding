@@ -32,7 +32,7 @@ export default function EnvelopeGrid({ envelopes = [], role = "member", members 
   // Group envelopes by category
   const categories = {
     NEEDS: { label: "Kebutuhan Pokok (NEEDS)", envelopes: envelopes.filter(e => e.category === "NEEDS"), color: "text-brand-gold" },
-    WANTS: { label: "Keinginan (WANTS)", envelopes: envelopes.filter(e => e.category === "WANTS"), color: "text-brand-sage" },
+    WANTS: { label: "Keinginan (WANTS)", envelopes: envelopes.filter(e => e.category === "WANTS"), color: "text-green-400" },
     SAVINGS: { label: "Tabungan (SAVINGS)", envelopes: envelopes.filter(e => e.category === "SAVINGS"), color: "text-blue-400" },
   };
 
@@ -86,14 +86,19 @@ export default function EnvelopeGrid({ envelopes = [], role = "member", members 
                   
                   // Determine status dynamically
                   let status = "safe";
-                  let barColor = "bg-brand-gold";
+                  let barColor = "bg-brand-gold"; // Default
+                  
+                  if (env.category === "NEEDS") barColor = "bg-brand-gold";
+                  else if (env.category === "WANTS") barColor = "bg-green-400";
+                  else if (env.category === "SAVINGS") barColor = "bg-blue-400";
+
                   let borderColor = "border-white/5";
                   
                   if (balance === 0) {
                     status = "locked";
                     barColor = "bg-brand-sage";
                     borderColor = "border-brand-sage/20";
-                  } else if (percentage <= 15) {
+                  } else if (percentage <= 15 && limit > 0) {
                     status = "warning";
                     barColor = "bg-red-400";
                     borderColor = "border-red-400/20";

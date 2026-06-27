@@ -21,8 +21,8 @@ export default function FinancialCharts({ envelopes = [], transactions = [] }) {
 
   const categoryConfigs = [
     { key: "NEEDS", label: "NEEDS (Pokok)", amount: categoryLimits.NEEDS, color: "#F6E0B5", ideal: 50 },
-    { key: "WANTS", label: "WANTS (Keinginan)", amount: categoryLimits.WANTS, color: "#98FB98", ideal: 30 },
-    { key: "SAVINGS", label: "SAVINGS (Tabungan)", amount: categoryLimits.SAVINGS, color: "#60A5FA", ideal: 20 },
+    { key: "WANTS", label: "WANTS (Keinginan)", amount: categoryLimits.WANTS, color: "#4ade80", ideal: 30 }, // green-400
+    { key: "SAVINGS", label: "SAVINGS (Tabungan)", amount: categoryLimits.SAVINGS, color: "#60A5FA", ideal: 20 }, // blue-400
   ];
 
   // Circle geometry for SVG Donut
@@ -81,8 +81,18 @@ export default function FinancialCharts({ envelopes = [], transactions = [] }) {
 
   const getCategoryColor = (cat) => {
     if (cat === "NEEDS") return "text-brand-gold bg-brand-gold/10 border-brand-gold/20";
-    if (cat === "WANTS") return "text-brand-sage bg-brand-sage/10 border-brand-sage/20";
+    if (cat === "WANTS") return "text-green-400 bg-green-400/10 border-green-400/20";
     return "text-blue-400 bg-blue-400/10 border-blue-400/20";
+  };
+
+  const getBarColor = (cat, percentage, overspent) => {
+    if (overspent) return "bg-red-500";
+    if (percentage >= 85) return "bg-orange-400"; // Warning (almost reached limit)
+    
+    if (cat === "NEEDS") return "bg-brand-gold";
+    if (cat === "WANTS") return "bg-green-400";
+    if (cat === "SAVINGS") return "bg-blue-400";
+    return "bg-brand-sage";
   };
 
   const activeSlice = hoveredSlice || (donutSlices.length > 0 ? donutSlices[0] : null);
@@ -124,9 +134,12 @@ export default function FinancialCharts({ envelopes = [], transactions = [] }) {
                       stroke={slice.color}
                       strokeWidth={hoveredSlice?.key === slice.key ? "18" : "14"}
                       strokeDasharray={circumference}
-                      strokeDashoffset={slice.strokeDashoffset}
-                      transform={`rotate(${slice.rotation} ${cx} ${cy})`}
-                      className="transition-all duration-300 cursor-pointer origin-center"
+                      style={{
+                        strokeDashoffset: slice.strokeDashoffset,
+                        transform: `rotate(${slice.rotation}deg)`,
+                        transformOrigin: "center"
+                      }}
+                      className="transition-all duration-1000 ease-out cursor-pointer"
                       onMouseEnter={() => setHoveredSlice(slice)}
                       onMouseLeave={() => setHoveredSlice(null)}
                     />
@@ -221,13 +234,7 @@ export default function FinancialCharts({ envelopes = [], transactions = [] }) {
                   <div className="h-2 w-full bg-brand-midnight rounded-full overflow-hidden relative">
                     {/* Limit marker or background */}
                     <div 
-                      className={`h-full rounded-full transition-all duration-1000 ${
-                        overspent 
-                          ? "bg-red-500" 
-                          : env.percentage >= 85 
-                          ? "bg-brand-gold" 
-                          : "bg-brand-sage"
-                      }`}
+                      className={`h-full rounded-full transition-all duration-1000 ${getBarColor(env.category, env.percentage, overspent)}`}
                       style={{ width: `${Math.min(env.percentage, 100)}%` }}
                     ></div>
                   </div>
