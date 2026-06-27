@@ -4,7 +4,7 @@ export default function MonthlyInsights({ advice = "", onReallocate }) {
   if (!advice) return null;
 
   return (
-    <div className="glass-card p-6 rounded-xl border border-brand-gold/10 relative overflow-hidden">
+    <div className="glass-card p-6 bg-white/5 rounded-2xl border border-white/10 relative overflow-hidden">
       {/* Background Accent */}
       <div className="absolute -top-10 -right-10 w-32 h-32 bg-brand-gold/5 rounded-full blur-2xl pointer-events-none"></div>
       
@@ -22,10 +22,10 @@ export default function MonthlyInsights({ advice = "", onReallocate }) {
       {onReallocate && (
         <button 
           onClick={onReallocate}
-          className="w-full bg-white/5 hover:bg-white/10 border border-brand-gold/20 text-brand-gold py-2.5 rounded text-sm font-medium transition-colors flex items-center justify-center gap-2"
+          className="w-full bg-white/5 hover:bg-white/10 border border-brand-gold/20 text-brand-gold py-2.5 rounded-lg text-sm font-medium transition-colors flex items-center justify-center gap-2 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
         >
           Realisasikan Pemindahan
-          <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14 5l7 7m0 0l-7 7m7-7H3" />
           </svg>
         </button>

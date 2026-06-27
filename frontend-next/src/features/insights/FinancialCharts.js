@@ -97,7 +97,7 @@ export default function FinancialCharts({ envelopes = [], transactions = [] }) {
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         
         {/* Donut Chart: Budget Allocation */}
-        <div className="glass-card p-6 rounded-xl border border-white/5 flex flex-col justify-between relative overflow-hidden shadow-xl">
+        <div className="glass-card p-6 bg-white/5 rounded-2xl border border-white/10 flex flex-col justify-between relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-brand-gold/5 rounded-full blur-3xl pointer-events-none"></div>
           
           <div className="mb-4">
@@ -138,8 +138,8 @@ export default function FinancialCharts({ envelopes = [], transactions = [] }) {
                   {activeSlice ? (
                     <>
                       <span className="text-[10px] text-brand-muted uppercase font-mono tracking-widest">{activeSlice.key}</span>
-                      <span className="text-white font-semibold text-base mt-0.5">{activeSlice.percentage.toFixed(0)}%</span>
-                      <span className="text-[9px] text-brand-gold font-mono mt-0.5">{formatCurrency(activeSlice.amount)}</span>
+                      <span className="text-white font-semibold text-base mt-0.5 tabular-nums">{activeSlice.percentage.toFixed(0)}%</span>
+                      <span className="text-[9px] text-brand-gold font-mono mt-0.5 tabular-nums">{formatCurrency(activeSlice.amount)}</span>
                     </>
                   ) : (
                     <span className="text-xs text-brand-muted font-mono">No Data</span>
@@ -169,9 +169,9 @@ export default function FinancialCharts({ envelopes = [], transactions = [] }) {
                           <span className="w-2.5 h-2.5 rounded-full shrink-0" style={{ backgroundColor: cat.color }}></span>
                           <span className="text-white font-medium">{cat.key}</span>
                         </div>
-                        <span className="font-mono text-brand-muted">{actualPct.toFixed(0)}%</span>
+                        <span className="font-mono text-brand-muted tabular-nums">{actualPct.toFixed(0)}%</span>
                       </div>
-                      <div className="flex justify-between text-[10px] text-brand-muted mt-1 px-4">
+                      <div className="flex justify-between text-[10px] text-brand-muted mt-1 px-4 tabular-nums">
                         <span>Limit: {formatCurrency(cat.amount)}</span>
                         <span>Ideal: {cat.ideal}%</span>
                       </div>
@@ -188,7 +188,7 @@ export default function FinancialCharts({ envelopes = [], transactions = [] }) {
         </div>
 
         {/* Bar Chart: Spent vs Limit */}
-        <div className="glass-card p-6 rounded-xl border border-white/5 flex flex-col justify-between relative overflow-hidden shadow-xl">
+        <div className="glass-card p-6 bg-white/5 rounded-2xl border border-white/10 flex flex-col justify-between relative overflow-hidden">
           <div className="absolute top-0 right-0 w-32 h-32 bg-brand-sage/5 rounded-full blur-3xl pointer-events-none"></div>
 
           <div className="mb-4">
@@ -209,7 +209,7 @@ export default function FinancialCharts({ envelopes = [], transactions = [] }) {
                         {env.category}
                       </span>
                     </div>
-                    <div className="text-[10px] font-mono text-right">
+                    <div className="text-[10px] font-mono text-right tabular-nums">
                       <span className={overspent ? "text-red-400 font-bold" : "text-brand-sage"}>
                         {formatCurrency(env.spent)}
                       </span>

@@ -39,26 +39,26 @@ export default function EnvelopeGrid({ envelopes = [], role = "member", members 
   return (
     <div className="space-y-10">
       {/* Control Header */}
-      <div className="flex items-center justify-between border-b border-white/5 pb-4">
-        <h2 className="font-display text-2xl text-white">Alokasi Amplop Anggaran</h2>
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 border-b border-white/5 pb-4">
+        <h2 className="font-display text-2xl text-white text-balance">Alokasi Amplop Anggaran</h2>
         
         {isAdmin && (
           <div className="flex items-center gap-3">
             <button 
               onClick={() => setIsCloseBookOpen(true)}
-              className="text-xs text-brand-gold bg-brand-gold/10 hover:bg-brand-gold/20 border border-brand-gold/30 px-4 py-2 rounded font-medium transition-colors cursor-pointer"
+              className="text-xs text-brand-gold bg-brand-gold/10 hover:bg-brand-gold/20 border border-brand-gold/30 px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
             >
               Tutup Buku Bulanan
             </button>
             <button 
               onClick={() => setIsTransferOpen(true)}
-              className="text-xs text-white bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-2 rounded font-medium transition-colors cursor-pointer"
+              className="text-xs text-white bg-white/10 hover:bg-white/20 border border-white/20 px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-white"
             >
               Transfer Saldo
             </button>
             <button 
               onClick={() => openModal("add")}
-              className="text-xs text-brand-midnight bg-brand-gold hover:bg-brand-gold-muted px-4 py-2 rounded font-medium transition-colors cursor-pointer"
+              className="text-xs text-brand-midnight bg-brand-gold hover:bg-brand-gold-muted px-4 py-2 rounded-lg font-medium transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-midnight focus-visible:ring-brand-gold"
             >
               + Tambah Amplop
             </button>
@@ -100,7 +100,7 @@ export default function EnvelopeGrid({ envelopes = [], role = "member", members 
                   }
 
                   return (
-                    <div key={env.id} className={`glass-card p-6 rounded-xl flex flex-col justify-between group relative overflow-hidden transition-all duration-300 border ${borderColor}`}>
+                    <div key={env.id} className={`glass-card bg-white/5 p-6 rounded-2xl flex flex-col justify-between group relative overflow-hidden transition-all duration-300 border ${borderColor}`}>
                       {/* Subtle Hover Glow */}
                       <div className="absolute inset-0 bg-white/5 opacity-0 group-hover:opacity-100 transition-opacity pointer-events-none"></div>
                       
@@ -127,9 +127,10 @@ export default function EnvelopeGrid({ envelopes = [], role = "member", members 
                         {isAdmin && (
                           <button 
                             onClick={() => openModal("edit", env)}
-                            className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors text-white cursor-pointer"
+                            aria-label="Edit Amplop"
+                            className="w-8 h-8 rounded-full bg-white/5 hover:bg-white/10 flex items-center justify-center transition-colors text-white cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
                           >
-                            <svg xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" className="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 5v.01M12 12v.01M12 19v.01M12 6a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2zm0 7a1 1 0 110-2 1 1 0 010 2z" />
                             </svg>
                           </button>
@@ -138,8 +139,8 @@ export default function EnvelopeGrid({ envelopes = [], role = "member", members 
                       
                       <div className="z-10">
                         <div className="flex justify-between items-end mb-3">
-                          <div className="font-mono text-2xl text-white font-semibold">{formatCurrency(balance)}</div>
-                          <div className="text-xs text-brand-muted mb-1">/ {formatCurrency(limit)}</div>
+                          <div className="font-mono text-2xl text-white font-semibold tabular-nums">{formatCurrency(balance)}</div>
+                          <div className="text-xs text-brand-muted mb-1 tabular-nums">/ {formatCurrency(limit)}</div>
                         </div>
                         
                         <div className="h-1.5 w-full bg-brand-midnight rounded-full overflow-hidden">
@@ -153,13 +154,13 @@ export default function EnvelopeGrid({ envelopes = [], role = "member", members 
                           <>
                             <button 
                               onClick={() => openModal("edit", env)}
-                              className="text-xs bg-brand-gold text-brand-midnight px-3 py-1.5 rounded font-medium hover:bg-brand-gold-muted transition-colors cursor-pointer"
+                              className="text-xs bg-brand-gold text-brand-midnight px-3 py-1.5 rounded-lg font-medium hover:bg-brand-gold-muted transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-slate focus-visible:ring-brand-gold"
                             >
                               Kelola
                             </button>
                             <button 
                               onClick={() => openModal("delete", env)}
-                              className="text-xs bg-red-500/20 text-red-300 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded font-medium transition-colors cursor-pointer"
+                              className="text-xs bg-red-500/20 text-red-300 hover:bg-red-500 hover:text-white px-3 py-1.5 rounded-lg font-medium transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-slate focus-visible:ring-red-500"
                             >
                               Hapus
                             </button>
@@ -176,8 +177,8 @@ export default function EnvelopeGrid({ envelopes = [], role = "member", members 
 
         {/* Placeholder if empty */}
         {envelopes.length === 0 && (
-          <div className="text-center py-16 glass-card rounded-xl border border-dashed border-white/10">
-            <svg xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-brand-muted mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+          <div className="text-center py-16 glass-card bg-white/5 rounded-2xl border border-dashed border-white/10">
+            <svg aria-hidden="true" xmlns="http://www.w3.org/2000/svg" className="h-12 w-12 text-brand-muted mx-auto mb-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M20 7l-8-4-8 4m16 0l-8 4m8-4v10l-8 4m0-10L4 7m8 4v10M4 7v10l8 4" />
             </svg>
             <h4 className="text-white font-medium text-lg mb-1">Belum Ada Amplop Anggaran</h4>
@@ -189,7 +190,7 @@ export default function EnvelopeGrid({ envelopes = [], role = "member", members 
             {isAdmin && (
               <button
                 onClick={() => openModal("add")}
-                className="text-xs text-brand-midnight bg-brand-gold hover:bg-brand-gold-muted px-5 py-2.5 rounded font-medium transition-colors cursor-pointer"
+                className="text-xs text-brand-midnight bg-brand-gold hover:bg-brand-gold-muted px-5 py-2.5 rounded-lg font-medium transition-colors cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-brand-gold"
               >
                 + Buat Amplop Pertama
               </button>

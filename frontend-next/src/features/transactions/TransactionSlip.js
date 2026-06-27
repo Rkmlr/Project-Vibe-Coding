@@ -89,7 +89,7 @@ export default function TransactionSlip({ envelopes = [], role = "member", onTra
   };
 
   return (
-    <div className="glass-card rounded-2xl overflow-hidden border border-brand-gold/10 relative shadow-2xl md:flex w-full">
+    <div className="glass-card rounded-2xl overflow-hidden border border-white/10 bg-white/5 relative shadow-xl md:flex w-full">
       {/* Subtle Background Accent */}
       <div className="absolute top-0 right-0 w-64 h-64 bg-brand-gold/5 rounded-full blur-3xl pointer-events-none"></div>
       
@@ -136,7 +136,7 @@ export default function TransactionSlip({ envelopes = [], role = "member", onTra
             type="text" 
             readOnly
             value={amount ? Number(amount).toLocaleString('id-ID') : "0"}
-            className="bg-transparent text-4xl md:text-5xl text-white font-mono font-medium outline-none w-full placeholder-white/20"
+            className="bg-transparent text-4xl md:text-5xl text-white font-mono font-medium outline-none w-full placeholder-white/20 tabular-nums focus-visible:ring-2 focus-visible:ring-brand-gold rounded-md px-2"
             placeholder="0"
           />
         </div>
@@ -149,7 +149,7 @@ export default function TransactionSlip({ envelopes = [], role = "member", onTra
                 <select 
                   value={envelopeId}
                   onChange={(e) => setEnvelopeId(e.target.value)}
-                  className="w-full bg-brand-slate border border-white/10 text-white p-3 rounded-lg outline-none focus:border-brand-gold/50 transition-colors text-sm cursor-pointer"
+                  className="w-full bg-brand-slate border border-white/10 text-white p-3 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-brand-gold transition-colors text-sm cursor-pointer"
                 >
                   {envelopes.length > 0 ? (
                     envelopes.map(env => (
@@ -175,7 +175,7 @@ export default function TransactionSlip({ envelopes = [], role = "member", onTra
               <select 
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full bg-brand-slate border border-white/10 text-white p-3 rounded-lg outline-none focus:border-brand-gold/50 transition-colors text-sm cursor-pointer"
+                className="w-full bg-brand-slate border border-white/10 text-white p-3 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-brand-gold transition-colors text-sm cursor-pointer"
               >
                 {categories[txType].map(cat => (
                   <option key={cat} value={cat}>{cat}</option>
@@ -191,7 +191,7 @@ export default function TransactionSlip({ envelopes = [], role = "member", onTra
               value={desc}
               onChange={(e) => setDesc(e.target.value)}
               placeholder={txType === "EXPENSE" ? "Misal: Makan Siang" : "Misal: Gaji Bulanan Bapak"}
-              className="w-full bg-brand-slate/50 border border-white/10 text-white p-3 rounded-lg outline-none focus:border-brand-gold/50 transition-colors placeholder-white/20 text-sm"
+              className="w-full bg-brand-slate/50 border border-white/10 text-white p-3 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-brand-gold transition-colors placeholder-white/20 text-sm"
             />
           </div>
         </div>
@@ -213,7 +213,8 @@ export default function TransactionSlip({ envelopes = [], role = "member", onTra
           <button 
             type="button"
             onClick={handleBackspace}
-            className="bg-red-400/10 hover:bg-red-400/20 text-red-400 border border-red-400/10 rounded-lg py-4 flex items-center justify-center transition-colors active:scale-95 cursor-pointer"
+            aria-label="Hapus Angka"
+            className="bg-red-400/10 hover:bg-red-400/20 text-red-400 border border-red-400/10 rounded-lg py-4 flex items-center justify-center transition-colors active:scale-95 cursor-pointer focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-red-400"
           >
             <svg xmlns="http://www.w3.org/2000/svg" className="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 14l2-2m0 0l2-2m-2 2l-2-2m2 2l2 2M3 12l6.414 6.414a2 2 0 001.414.586H19a2 2 0 002-2V7a2 2 0 00-2-2h-8.172a2 2 0 00-1.414.586L3 12z" />
@@ -223,7 +224,7 @@ export default function TransactionSlip({ envelopes = [], role = "member", onTra
         <button 
           onClick={handleSubmit}
           disabled={isLoading}
-          className="w-full bg-brand-gold hover:bg-brand-gold-muted text-brand-midnight py-4 rounded-xl font-medium text-lg transition-all transform hover:-translate-y-1 shadow-[0_4px_20px_rgba(246,224,181,0.15)] active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50"
+          className="w-full bg-brand-gold hover:bg-brand-gold-muted text-brand-midnight py-4 rounded-xl font-medium text-lg transition-all transform hover:-translate-y-1 shadow-[0_4px_20px_rgba(246,224,181,0.15)] active:scale-95 flex items-center justify-center gap-2 cursor-pointer disabled:opacity-50 focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:ring-offset-brand-midnight focus-visible:ring-brand-gold"
         >
           {isLoading ? (
             <span className="w-5 h-5 border-2 border-brand-midnight border-t-transparent rounded-full animate-spin"></span>

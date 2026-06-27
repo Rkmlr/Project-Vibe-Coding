@@ -149,41 +149,44 @@ export default function DashboardPage() {
 
   return (
     <div className="space-y-12 animate-fade-in-up">
-      {/* Header Summary */}
-      <header className="flex flex-col md:flex-row md:items-end justify-between gap-6 border-b border-white/5 pb-6">
+      {/* Header & Hero Section */}
+      <header className="flex flex-col gap-8">
         <div>
           {role === "admin" ? (
             <>
-              <h1 className="font-display text-4xl text-white mb-2">Ledger {familyName || "Keluarga"}</h1>
+              <h1 className="font-display text-4xl text-white mb-2 text-balance">Ledger {familyName || "Keluarga"}</h1>
               <p className="text-brand-muted text-sm font-mono uppercase tracking-wider">
                 Kode Undangan: <span className="text-brand-gold font-bold select-all">{inviteCode}</span>
               </p>
             </>
           ) : (
             <>
-              <h1 className="font-display text-3xl text-white mb-2">Selamat datang kembali, {userName}</h1>
+              <h1 className="font-display text-3xl text-white mb-2 text-balance">Selamat datang kembali, {userName}</h1>
               <p className="text-brand-muted text-lg">Kelola pengeluaran harian Anda.</p>
             </>
           )}
         </div>
         
-        <div className="flex flex-wrap gap-4 md:gap-8 justify-end">
+        {/* Hero Summaries */}
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           {role === "admin" && (
-            <div className="flex flex-col items-start md:items-end border-r border-white/10 pr-4 md:pr-8">
-              <span className="text-xs text-brand-sage font-mono uppercase tracking-widest mb-1">
+            <div className="glass-card p-6 md:p-8 rounded-2xl border border-white/10 flex flex-col justify-center items-start relative overflow-hidden">
+              <div className="absolute -right-10 -top-10 w-40 h-40 bg-brand-sage/10 rounded-full blur-3xl pointer-events-none"></div>
+              <span className="text-sm text-brand-sage font-mono uppercase tracking-widest mb-2 relative z-10">
                 Kas Utama Keluarga
               </span>
-              <span className="font-mono text-2xl md:text-3xl text-brand-sage font-medium">
+              <span className="font-mono text-4xl md:text-5xl text-brand-sage font-semibold tabular-nums relative z-10">
                 {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(cashPoolBalance)}
               </span>
             </div>
           )}
           
-          <div className="flex flex-col items-start md:items-end">
-            <span className="text-xs text-brand-gold font-mono uppercase tracking-widest mb-1">
+          <div className="glass-card p-6 md:p-8 rounded-2xl border border-white/10 flex flex-col justify-center items-start relative overflow-hidden">
+            <div className="absolute -right-10 -top-10 w-40 h-40 bg-brand-gold/10 rounded-full blur-3xl pointer-events-none"></div>
+            <span className="text-sm text-brand-gold font-mono uppercase tracking-widest mb-2 relative z-10">
               {role === "admin" ? "Total Saldo Amplop" : "Sisa Saldo Jatah"}
             </span>
-            <span className="font-mono text-2xl md:text-3xl text-white font-medium">
+            <span className="font-mono text-4xl md:text-5xl text-white font-semibold tabular-nums relative z-10">
               {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(
                 envelopes.reduce((acc, curr) => acc + parseFloat(curr.balance || 0), 0)
               )}
@@ -194,60 +197,60 @@ export default function DashboardPage() {
 
       {/* Admin Interface Layout */}
       {role === "admin" && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Left Column: Core Financial State */}
-          <div className="lg:col-span-2 space-y-10">
-            <EnvelopeGrid envelopes={envelopes} role={role} members={members} onSuccess={fetchData} />
-            
-            <div className="pt-6 border-t border-white/5">
-              <FinancialCharts envelopes={envelopes} transactions={transactions} />
+        <div className="space-y-8">
+          <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
+            {/* Left Column: Core Financial State */}
+            <div className="space-y-8">
+              <EnvelopeGrid envelopes={envelopes} role={role} members={members} onSuccess={fetchData} />
             </div>
-          </div>
-          
-          {/* Right Column: Actions & Recent Activity */}
-          <div className="space-y-8">
-            <div className="p-6 glass-card rounded-xl border border-white/5">
-              <h2 className="font-display text-xl text-white mb-4">Tambah Transaksi</h2>
+            
+            {/* Right Column: Actions */}
+            <div className="space-y-8">
               <TransactionSlip envelopes={envelopes} role={role} onTransactionSuccess={fetchData} />
             </div>
-            
+          </div>
+
+          {/* Full Width: Financial Analysis */}
+          <FinancialCharts envelopes={envelopes} transactions={transactions} />
+
+          <div className="space-y-8">
             <MonthlyInsights advice={insightAdvice} onReallocate={handleReallocate} />
-            <AtomicLedger transactions={mappedTransactions} limit={4} />
+            <AtomicLedger transactions={mappedTransactions} title="Buku Kas Keluarga" limit={5} />
           </div>
         </div>
       )}
 
       {/* Member Interface Layout */}
       {role === "member" && (
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-8 items-start">
-          <div className="lg:col-span-2 space-y-10">
-            <TransactionSlip envelopes={envelopes} role={role} onTransactionSuccess={fetchData} />
-          </div>
-          
+        <div className="grid grid-cols-1 xl:grid-cols-2 gap-8 items-start">
           <div className="space-y-8">
-            <div>
-              <h2 className="font-display text-xl text-white mb-4">Amplop Saya</h2>
-              <div className="flex flex-col gap-3">
+            <TransactionSlip envelopes={envelopes} role={role} onTransactionSuccess={fetchData} />
+            
+            <div className="glass-card p-6 md:p-8 rounded-2xl border border-white/10">
+              <h2 className="font-display text-2xl text-white mb-6 text-balance">Amplop Saya</h2>
+              <div className="flex flex-col gap-4">
                 {envelopes.map(env => (
-                  <div key={env.id} className="glass-card p-4 rounded-xl border border-white/5 flex justify-between items-center">
+                  <div key={env.id} className="p-4 rounded-xl border border-white/5 bg-white/5 flex justify-between items-center hover:bg-white/10 transition-colors">
                     <div>
-                      <div className="text-white font-medium">{env.name}</div>
+                      <div className="text-white font-medium text-lg">{env.name}</div>
                       <div className="text-xs text-brand-muted font-mono mt-1 uppercase">{env.category}</div>
                     </div>
-                    <div className="font-mono text-lg text-brand-gold">
+                    <div className="font-mono text-xl text-brand-gold font-semibold tabular-nums">
                       {new Intl.NumberFormat("id-ID", { style: "currency", currency: "IDR", maximumFractionDigits: 0 }).format(env.balance)}
                     </div>
                   </div>
                 ))}
                 {envelopes.length === 0 && (
-                  <div className="p-6 text-center text-brand-muted text-xs italic glass-card border border-white/5 rounded-xl">
+                  <div className="p-6 text-center text-brand-muted text-sm italic border border-white/5 bg-white/5 rounded-xl">
                     Belum ada amplop anggaran. Minta pengelola untuk menambahkan amplop.
                   </div>
                 )}
               </div>
             </div>
-
-            <AtomicLedger transactions={mappedTransactions} title="Aktivitas Pribadi" limit={3} />
+          </div>
+          
+          <div className="space-y-8">
+            <AtomicLedger transactions={mappedTransactions} title="Aktivitas Pribadi" limit={10} />
           </div>
         </div>
       )}
