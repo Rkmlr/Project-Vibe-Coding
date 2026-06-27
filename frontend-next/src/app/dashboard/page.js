@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createClient } from "@/utils/supabase/client";
 import EnvelopeGrid from "@/features/envelopes/EnvelopeGrid";
 import TransactionSlip from "@/features/transactions/TransactionSlip";
 import AtomicLedger from "@/features/transactions/AtomicLedger";
@@ -23,91 +22,63 @@ export default function DashboardPage() {
 
   const fetchData = async () => {
     try {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) return;
+      // 1. Fetch Auth Profile
+      const authRes = await fetch('/api/auth/me');
+      if (!authRes.ok) return;
+      const { user } = await authRes.json();
 
-      // 1. Fetch user profile
-      const { data: profile, error: profileError } = await supabase
-        .from("profiles")
-        .select("display_name, family_id, role")
-        .eq("id", user.id)
-        .single();
+      setRole(user.role);
+      setUserName(user.display_name);
 
-      if (profileError || !profile) return;
-
-      setRole(profile.role);
-      setUserName(profile.display_name);
-
-      if (profile.family_id) {
-        // 2. Fetch family details
-        const { data: family } = await supabase
-          .from("families")
-          .select("name, invite_code, cash_pool_balance")
-          .eq("id", profile.family_id)
-          .single();
-
-        if (family) {
-          setFamilyName(family.name);
-          setInviteCode(family.invite_code);
-          setCashPoolBalance(parseFloat(family.cash_pool_balance || 0));
-        }
-
-        // 3. Fetch envelopes
-        const { data: envelopesData } = await supabase
-          .from("envelopes")
-          .select("*")
-          .eq("family_id", profile.family_id)
-          .order("name", { ascending: true });
-
-        if (envelopesData) {
-          setEnvelopes(envelopesData);
-          
-          // Generate insight advice if any envelopes are low
-          const lowEnvelopes = envelopesData.filter(env => {
-            const balance = parseFloat(env.balance || 0);
-            const limit = parseFloat(env.limit_amount || 0);
-            return limit > 0 && (balance / limit) <= 0.15 && balance > 0;
-          });
-          
-          const savingsEnvelopes = envelopesData.filter(env => env.category === "SAVINGS" && parseFloat(env.balance) > 1000000);
-          
-          if (lowEnvelopes.length > 0) {
-            let adviceStr = `Pengeluaran ${lowEnvelopes.map(e => e.name).join(", ")} Anda mendekati batas.`;
-            if (savingsEnvelopes.length > 0) {
-              adviceStr += ` Terdapat kelebihan dana di ${savingsEnvelopes.map(e => e.name).join(", ")} yang dapat dialokasikan.`;
-            } else {
-              adviceStr += ` Harap minta orang tua melakukan realokasi dana.`;
-            }
-            setInsightAdvice(adviceStr);
-          } else {
-            setInsightAdvice("Semua amplop anggaran berada dalam batas aman. Kerja bagus!");
-          }
-        }
-
-        // 4. Fetch transactions
-        const { data: transactionsData } = await supabase
-          .from("transactions")
-          .select("*")
-          .eq("family_id", profile.family_id)
-          .order("date", { ascending: false });
-
-        if (transactionsData) {
-          setTransactions(transactionsData);
-        }
-
-        // 5. Fetch family members list (only if admin)
-        if (profile.role === "admin") {
-          const { data: membersData } = await supabase
-            .from("profiles")
-            .select("id, display_name, role")
-            .eq("family_id", profile.family_id);
-
-          if (membersData) {
-            setMembers(membersData);
+      if (user.family) {
+        setFamilyName(user.family.name);
+        setInviteCode(user.family.invite_code);
+        setCashPoolBalance(parseFloat(user.family.cash_pool_balance || 0));
+        
+        if (user.role === 'admin') {
+          const membersRes = await fetch('/api/members');
+          if (membersRes.ok) {
+            const { data } = await membersRes.json();
+            setMembers(data);
           }
         }
       }
+      
+      // 3. Fetch envelopes
+      const envRes = await fetch('/api/envelopes');
+      if (envRes.ok) {
+        const { data: envelopesData } = await envRes.json();
+        setEnvelopes(envelopesData);
+        
+        // Generate insight advice if any envelopes are low
+        const lowEnvelopes = envelopesData.filter(env => {
+          const balance = parseFloat(env.balance || 0);
+          const limit = parseFloat(env.limit_amount || 0);
+          return limit > 0 && (balance / limit) <= 0.15 && balance > 0;
+        });
+        
+        const savingsEnvelopes = envelopesData.filter(env => env.category === "SAVINGS" && parseFloat(env.balance) > 1000000);
+        
+        if (lowEnvelopes.length > 0) {
+          let adviceStr = `Pengeluaran ${lowEnvelopes.map(e => e.name).join(", ")} Anda mendekati batas.`;
+          if (savingsEnvelopes.length > 0) {
+            adviceStr += ` Terdapat kelebihan dana di ${savingsEnvelopes.map(e => e.name).join(", ")} yang dapat dialokasikan.`;
+          } else {
+            adviceStr += ` Harap minta orang tua melakukan realokasi dana.`;
+          }
+          setInsightAdvice(adviceStr);
+        } else {
+          setInsightAdvice("Semua amplop anggaran berada dalam batas aman. Kerja bagus!");
+        }
+      }
+
+      // 4. Fetch transactions
+      const txRes = await fetch('/api/transactions');
+      if (txRes.ok) {
+        const { data: transactionsData } = await txRes.json();
+        setTransactions(transactionsData);
+      }
+
     } catch (err) {
       console.error("Error fetching dashboard data:", err);
     }

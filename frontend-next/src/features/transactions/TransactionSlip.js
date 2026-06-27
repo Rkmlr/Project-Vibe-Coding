@@ -146,14 +146,14 @@ export default function TransactionSlip({ envelopes = [], role = "member", onTra
         </div>
 
         <div className="space-y-4">
-          <div className="grid grid-cols-2 gap-3">
-            <div>
+          <div className="flex flex-col sm:flex-row gap-4">
+            <div className="flex-1 min-w-0">
               <label className="text-[10px] text-brand-muted mb-1.5 block uppercase tracking-wider font-mono">Pilih Amplop</label>
               {txType === "EXPENSE" ? (
                 <select 
                   value={envelopeId}
                   onChange={(e) => setEnvelopeId(e.target.value)}
-                  className="w-full bg-brand-slate border border-white/10 text-white p-3 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-brand-gold transition-colors text-sm cursor-pointer"
+                  className="w-full bg-brand-slate border border-white/10 text-white p-3 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-brand-gold transition-colors text-sm cursor-pointer truncate"
                 >
                   {envelopes.length > 0 ? (
                     envelopes.map(env => (
@@ -170,16 +170,16 @@ export default function TransactionSlip({ envelopes = [], role = "member", onTra
                   type="text" 
                   readOnly 
                   value="Kas Utama (Dompet)" 
-                  className="w-full bg-brand-slate/40 border border-white/10 text-brand-muted p-3 rounded-lg outline-none text-sm font-medium"
+                  className="w-full bg-brand-slate/40 border border-white/10 text-brand-muted p-3 rounded-lg outline-none text-sm font-medium truncate"
                 />
               )}
             </div>
-            <div>
+            <div className="flex-1 min-w-0">
               <label className="text-[10px] text-brand-muted mb-1.5 block uppercase tracking-wider font-mono">Kategori</label>
               <select 
                 value={category}
                 onChange={(e) => setCategory(e.target.value)}
-                className="w-full bg-brand-slate border border-white/10 text-white p-3 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-brand-gold transition-colors text-sm cursor-pointer"
+                className="w-full bg-brand-slate border border-white/10 text-white p-3 rounded-lg outline-none focus-visible:ring-2 focus-visible:ring-brand-gold transition-colors text-sm cursor-pointer truncate"
               >
                 {categories[txType].map(cat => (
                   <option key={cat} value={cat}>{cat}</option>

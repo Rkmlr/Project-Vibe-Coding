@@ -2,7 +2,6 @@
 
 import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
-import { createClient } from "@/utils/supabase/client";
 import ActivityLogs from "@/features/audit-logs/ActivityLogs";
 
 export default function LogsPage() {
@@ -15,42 +14,34 @@ export default function LogsPage() {
 
   useEffect(() => {
     const checkAuthAndFetch = async () => {
-      const supabase = createClient();
-      const { data: { user } } = await supabase.auth.getUser();
-      if (!user) {
-        router.push("/");
-        return;
-      }
-
-      const { data: profile } = await supabase
-        .from("profiles")
-        .select("role, family_id")
-        .eq("id", user.id)
-        .single();
-
-      if (!profile || profile.role !== "admin") {
-        router.push("/dashboard");
-        return;
-      }
-
-      setRole(profile.role);
-
-      if (profile.family_id) {
-        // Fetch audit logs
-        const { data: auditLogsData } = await supabase
-          .from("audit_logs")
-          .select("*, profiles(display_name)")
-          .eq("family_id", profile.family_id)
-          .order("created_at", { ascending: false });
-
-        if (auditLogsData) {
-          setLogs(auditLogsData.map(log => ({
-            ...log,
-            user_name: log.profiles ? log.profiles.display_name : "System",
-          })));
+      try {
+        const authRes = await fetch('/api/auth/me');
+        if (!authRes.ok) {
+          router.push("/");
+          return;
         }
+        
+        const { user } = await authRes.json();
+        
+        if (user.role !== "admin") {
+          router.push("/dashboard");
+          return;
+        }
+
+        setRole(user.role);
+
+        if (user.family) {
+          const logsRes = await fetch('/api/audit-logs');
+          if (logsRes.ok) {
+            const { data: auditLogsData } = await logsRes.json();
+            setLogs(auditLogsData);
+          }
+        }
+        setIsLoading(false);
+      } catch (err) {
+        console.error("Error fetching logs:", err);
+        setIsLoading(false);
       }
-      setIsLoading(false);
     };
 
     checkAuthAndFetch();

@@ -1,35 +1,37 @@
-"use server";
-
-import { createClient } from "@/utils/supabase/server";
-import { redirect } from "next/navigation";
-
 /**
  * Login user
  */
 export async function login(formData) {
   const email = formData.get("email");
   const password = formData.get("password");
-  const supabase = await createClient();
-
-  const { error } = await supabase.auth.signInWithPassword({
-    email,
-    password,
-  });
-
-  if (error) {
-    return { error: error.message };
+  
+  try {
+    const res = await fetch('/api/auth/login', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ email, password })
+    });
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Gagal masuk");
+    return { success: true };
+  } catch (err) {
+    return { error: err.message };
   }
-
-  return { success: true };
 }
 
 /**
  * Logout user
  */
 export async function logout() {
-  const supabase = await createClient();
-  await supabase.auth.signOut();
-  redirect("/");
+  try {
+    await fetch('/api/auth/logout', { method: 'POST' });
+    // Note: redirect('/') cannot be used directly in a generic fetch utility unless triggered by a form or handled in a client component using next/navigation router.
+    // It's safer for the caller to redirect if this is no longer a Server Action.
+    // However, if we leave it to the caller, we just return success.
+    return { success: true };
+  } catch (err) {
+    return { error: err.message };
+  }
 }
 
 /**
@@ -43,45 +45,23 @@ export async function signup(state, formData) {
   const familyName = formData.get("familyName");
   const inviteCode = formData.get("inviteCode");
 
-  const supabase = await createClient();
-
-  // 1. Sign up the user in Supabase Auth
-  const { data: authData, error: authError } = await supabase.auth.signUp({
-    email,
-    password,
-    options: {
-      data: {
+  try {
+    const res = await fetch('/api/auth/register', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        email,
+        password,
         display_name: displayName,
-      },
-    },
-  });
-
-  if (authError) {
-    return { error: authError.message };
-  }
-
-  // 2. Perform onboarding (Create or Join family)
-  if (mode === "create") {
-    // Auto-generate invite code based on family name
-    const generatedCode = `${familyName.replace(/\s+/g, "-").toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
-
-    const { error: rpcError } = await supabase.rpc("create_family_and_set_admin", {
-      family_name: familyName,
-      invite_code: generatedCode,
+        mode,
+        family_name: familyName,
+        invite_code: inviteCode
+      })
     });
-
-    if (rpcError) {
-      return { error: `Gagal membuat keluarga: ${rpcError.message}` };
-    }
-  } else if (mode === "join") {
-    const { error: rpcError } = await supabase.rpc("join_family_by_code", {
-      p_invite_code: inviteCode.trim(),
-    });
-
-    if (rpcError) {
-      return { error: `Gagal bergabung: ${rpcError.message}` };
-    }
+    const data = await res.json();
+    if (!res.ok) throw new Error(data.error || "Gagal mendaftar");
+    return { success: true };
+  } catch (err) {
+    return { error: err.message };
   }
-
-  return { success: true };
 }

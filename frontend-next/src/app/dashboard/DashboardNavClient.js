@@ -31,6 +31,7 @@ export default function DashboardNavClient({ profile }) {
 
   const handleLogoutClick = async () => {
     await logout();
+    window.location.href = "/";
   };
 
   const isAdmin = profile?.role === "admin";
