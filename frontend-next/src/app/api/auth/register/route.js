@@ -4,7 +4,12 @@ import { createApiClient } from "@/utils/supabase/api";
 export async function POST(request) {
   try {
     const body = await request.json();
-    const { email, password, displayName, mode, familyName, inviteCode } = body;
+    const email = body.email;
+    const password = body.password;
+    const displayName = body.displayName || body.display_name;
+    const mode = body.mode;
+    const familyName = body.familyName || body.family_name;
+    const inviteCode = body.inviteCode || body.invite_code;
 
     if (!email || !password || !displayName || !mode) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
