@@ -1,8 +1,14 @@
 import { NextResponse } from "next/server";
 import { createApiClient } from "@/utils/supabase/api";
+import crypto from "crypto";
+import { rateLimit } from "@/utils/rate-limit";
 
 export async function POST(request) {
   try {
+    if (!rateLimit(request, 5, 60000)) {
+      return NextResponse.json({ error: "Terlalu banyak permintaan, coba lagi nanti." }, { status: 429 });
+    }
+
     const body = await request.json();
     const email = body.email;
     const password = body.password;
@@ -38,7 +44,8 @@ export async function POST(request) {
          return NextResponse.json({ error: "Family name is required for mode create" }, { status: 400 });
       }
       
-      const generatedCode = `${familyName.replace(/\s+/g, "-").toUpperCase()}-${Math.floor(1000 + Math.random() * 9000)}`;
+      const randomHex = crypto.randomBytes(4).toString("hex").toUpperCase();
+      const generatedCode = `${familyName.replace(/\s+/g, "-").toUpperCase()}-${randomHex}`;
 
       const { error: rpcError } = await supabase.rpc("create_family_and_set_admin", {
         family_name: familyName,
@@ -70,10 +77,11 @@ export async function POST(request) {
     return NextResponse.json({
       success: true,
       message: "Registration successful",
+      requiresEmailConfirmation: !session,
       tokens: session ? {
         access_token: session.access_token,
         refresh_token: session.refresh_token,
-      } : null // If email confirmation is required, session might be null
+      } : null
     }, { status: 201 });
 
   } catch (err) {

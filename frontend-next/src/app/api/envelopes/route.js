@@ -88,15 +88,6 @@ export async function POST(request) {
       return NextResponse.json({ error: insertError.message }, { status: 400 });
     }
 
-    // 3. Log Audit
-    await supabase.from("audit_logs").insert({
-      family_id: profile.family_id,
-      profile_id: user.id,
-      action: "CREATE_ENVELOPES",
-      target_table: "envelopes",
-      old_values: null,
-      new_values: { ...newEnvelope, _description: `Membuat amplop anggaran baru: ${name}` },
-    });
 
     return NextResponse.json({ success: true, data: newEnvelope, message: "Amplop berhasil dibuat" }, { status: 201 });
 

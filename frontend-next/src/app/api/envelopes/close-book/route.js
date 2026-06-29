@@ -54,68 +54,31 @@ export async function POST(request) {
     }
 
     if (method === "sweep") {
-      // Option A: Sweep all back to Cash Pool
-      const { data: family } = await supabase
-        .from("families")
-        .select("cash_pool_balance")
-        .eq("id", profile.family_id)
-        .single();
-
-      await supabase
-        .from("families")
-        .update({ cash_pool_balance: parseFloat(family.cash_pool_balance) + totalRemaining })
-        .eq("id", profile.family_id);
-
-      // Set all envelope balances to 0
-      for (const env of envelopeUpdates) {
-        await supabase.from("envelopes").update({ balance: 0 }).eq("id", env.id);
-      }
-
-      // Log transaction
-      await supabase.from("transactions").insert({
-        family_id: profile.family_id,
-        amount: totalRemaining,
-        type: "INCOME",
-        description: "Tutup Buku Bulanan: Tarik semua sisa saldo amplop ke Kas Utama",
-        source: "APP",
+      const { error: rpcError } = await supabase.rpc("close_book", {
+        p_family_id: profile.family_id,
+        p_user_id: user.id
       });
+
+      if (rpcError) {
+        return NextResponse.json({ error: `Gagal tutup buku: ${rpcError.message}` }, { status: 400 });
+      }
     } else if (method === "savings") {
-      // Option B: Move to savings envelope
       if (!savingsEnvelopeId) {
         return NextResponse.json({ error: "Harap pilih amplop tabungan tujuan." }, { status: 400 });
       }
 
-      const { data: savingsEnv } = await supabase
-        .from("envelopes")
-        .select("balance, name")
-        .eq("id", savingsEnvelopeId)
-        .single();
+      const { error: rpcError } = await supabase.rpc("close_book_savings", {
+        p_family_id: profile.family_id,
+        p_user_id: user.id,
+        p_savings_envelope_id: savingsEnvelopeId
+      });
 
-      // Add to savings envelope
-      await supabase
-        .from("envelopes")
-        .update({ balance: parseFloat(savingsEnv.balance) + totalRemaining })
-        .eq("id", savingsEnvelopeId);
-
-      // Set other envelope balances to 0
-      for (const env of envelopeUpdates) {
-        await supabase.from("envelopes").update({ balance: 0 }).eq("id", env.id);
-        
-        // Log transaction for each
-        await supabase.from("transactions").insert({
-          family_id: profile.family_id,
-          envelope_id: savingsEnvelopeId,
-          source_envelope_id: env.id,
-          amount: parseFloat(env.balance),
-          type: "TRANSFER",
-          description: `Tutup Buku Bulanan: Pindahan sisa saldo dari '${env.name}' ke Tabungan '${savingsEnv.name}'`,
-          source: "APP",
-        });
+      if (rpcError) {
+        return NextResponse.json({ error: `Gagal pindah ke tabungan: ${rpcError.message}` }, { status: 400 });
       }
     } else if (method === "rollover") {
-      // Option C: Accumulate (Do nothing to balance, just let it carry over)
-      // Balance is kept, so we just log a system event in audit logs
-      // No envelope updates are needed.
+      // Rollover: Accumulate (Do nothing to balance, just let it carry over)
+      // No updates needed, but can log audit
     }
 
     return NextResponse.json({ success: true, message: "Tutup buku berhasil" }, { status: 200 });

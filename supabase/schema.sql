@@ -41,6 +41,7 @@ CREATE TABLE IF NOT EXISTS public.envelopes (
     limit_amount NUMERIC NOT NULL,
     category TEXT CHECK (category IN ('NEEDS', 'WANTS', 'SAVINGS')) NOT NULL,
     assigned_to UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
+    created_by UUID REFERENCES public.profiles(id) ON DELETE SET NULL,
     created_at TIMESTAMP WITH TIME ZONE DEFAULT timezone('utc'::text, now()) NOT NULL
 );
 
@@ -297,3 +298,300 @@ BEGIN
 END;
 $$ LANGUAGE plpgsql SECURITY DEFINER;
 
+-- =====================================================================
+-- 6. RPC FUNCTIONS FOR TRANSACTIONS & ENVELOPES
+-- =====================================================================
+
+-- Fungsi untuk mencatat transaksi secara atomik
+CREATE OR REPLACE FUNCTION public.add_transaction(
+  p_family_id UUID,
+  p_user_id UUID,
+  p_type TEXT,
+  p_amount NUMERIC,
+  p_description TEXT,
+  p_source TEXT,
+  p_envelope_id UUID,
+  p_date TIMESTAMP WITH TIME ZONE
+)
+RETURNS public.transactions AS $$
+DECLARE
+  new_tx public.transactions;
+  v_envelope_balance NUMERIC;
+  v_cash_pool_balance NUMERIC;
+BEGIN
+  -- Validasi jumlah
+  IF p_amount <= 0 THEN
+    RAISE EXCEPTION 'Nominal harus lebih dari 0';
+  END IF;
+
+  IF p_type = 'EXPENSE' THEN
+    IF p_envelope_id IS NULL THEN
+      RAISE EXCEPTION 'Pengeluaran harus menggunakan amplop';
+    END IF;
+
+    -- Kunci baris amplop untuk update dan cek saldo
+    SELECT balance INTO v_envelope_balance
+    FROM public.envelopes
+    WHERE id = p_envelope_id AND family_id = p_family_id
+    FOR UPDATE;
+
+    IF v_envelope_balance IS NULL THEN
+      RAISE EXCEPTION 'Amplop tidak ditemukan';
+    END IF;
+
+    IF v_envelope_balance < p_amount THEN
+      RAISE EXCEPTION 'Saldo amplop tidak mencukupi';
+    END IF;
+
+    -- Kurangi saldo amplop
+    UPDATE public.envelopes
+    SET balance = balance - p_amount
+    WHERE id = p_envelope_id;
+
+  ELSIF p_type = 'INCOME' THEN
+    -- Kunci baris keluarga untuk update dan cek saldo
+    SELECT cash_pool_balance INTO v_cash_pool_balance
+    FROM public.families
+    WHERE id = p_family_id
+    FOR UPDATE;
+
+    IF v_cash_pool_balance IS NULL THEN
+      RAISE EXCEPTION 'Keluarga tidak ditemukan';
+    END IF;
+
+    -- Tambah saldo kas utama
+    UPDATE public.families
+    SET cash_pool_balance = cash_pool_balance + p_amount
+    WHERE id = p_family_id;
+  ELSE
+    RAISE EXCEPTION 'Tipe transaksi tidak valid untuk fungsi ini';
+  END IF;
+
+  -- Catat transaksi
+  INSERT INTO public.transactions (
+    family_id, profile_id, envelope_id, amount, type, description, source, date
+  )
+  VALUES (
+    p_family_id, p_user_id, p_envelope_id, p_amount, p_type, p_description, p_source, COALESCE(p_date, now())
+  )
+  RETURNING * INTO new_tx;
+
+  RETURN new_tx;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Fungsi untuk pemindahan dana antar amplop (atau dari Kas Utama ke amplop)
+CREATE OR REPLACE FUNCTION public.transfer_funds(
+  p_family_id UUID,
+  p_user_id UUID,
+  p_from_envelope_id UUID,
+  p_to_envelope_id UUID,
+  p_amount NUMERIC,
+  p_description TEXT
+)
+RETURNS public.transactions AS $$
+DECLARE
+  new_tx public.transactions;
+  v_from_balance NUMERIC;
+  v_to_balance NUMERIC;
+  v_cash_pool_balance NUMERIC;
+BEGIN
+  -- Validasi jumlah
+  IF p_amount <= 0 THEN
+    RAISE EXCEPTION 'Nominal harus lebih dari 0';
+  END IF;
+  
+  IF p_from_envelope_id = p_to_envelope_id THEN
+    RAISE EXCEPTION 'Amplop asal dan tujuan tidak boleh sama';
+  END IF;
+
+  -- Jika dari Kas Utama (null) ke Amplop
+  IF p_from_envelope_id IS NULL THEN
+    -- Kunci baris keluarga
+    SELECT cash_pool_balance INTO v_cash_pool_balance
+    FROM public.families
+    WHERE id = p_family_id
+    FOR UPDATE;
+
+    IF v_cash_pool_balance IS NULL THEN
+      RAISE EXCEPTION 'Keluarga tidak ditemukan';
+    END IF;
+
+    IF v_cash_pool_balance < p_amount THEN
+      RAISE EXCEPTION 'Saldo Kas Utama tidak mencukupi';
+    END IF;
+
+    -- Kurangi saldo Kas Utama
+    UPDATE public.families
+    SET cash_pool_balance = cash_pool_balance - p_amount
+    WHERE id = p_family_id;
+  ELSE
+    -- Jika dari Amplop ke Amplop
+    -- Kunci baris amplop asal
+    SELECT balance INTO v_from_balance
+    FROM public.envelopes
+    WHERE id = p_from_envelope_id AND family_id = p_family_id
+    FOR UPDATE;
+
+    IF v_from_balance IS NULL THEN
+      RAISE EXCEPTION 'Amplop asal tidak ditemukan';
+    END IF;
+
+    IF v_from_balance < p_amount THEN
+      RAISE EXCEPTION 'Saldo amplop asal tidak mencukupi';
+    END IF;
+
+    -- Kurangi saldo amplop asal
+    UPDATE public.envelopes
+    SET balance = balance - p_amount
+    WHERE id = p_from_envelope_id;
+  END IF;
+
+  -- Kunci baris amplop tujuan (selalu ada)
+  SELECT balance INTO v_to_balance
+  FROM public.envelopes
+  WHERE id = p_to_envelope_id AND family_id = p_family_id
+  FOR UPDATE;
+
+  IF v_to_balance IS NULL THEN
+    RAISE EXCEPTION 'Amplop tujuan tidak ditemukan';
+  END IF;
+
+  -- Tambah saldo amplop tujuan
+  UPDATE public.envelopes
+  SET balance = balance + p_amount
+  WHERE id = p_to_envelope_id;
+
+  -- Catat transaksi
+  INSERT INTO public.transactions (
+    family_id, profile_id, envelope_id, source_envelope_id, amount, type, description, source
+  )
+  VALUES (
+    p_family_id, p_user_id, p_to_envelope_id, p_from_envelope_id, p_amount, 'TRANSFER', p_description, 'APP'
+  )
+  RETURNING * INTO new_tx;
+
+  RETURN new_tx;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Fungsi untuk tutup buku bulanan: menarik sisa saldo ke Kas Utama
+CREATE OR REPLACE FUNCTION public.close_book(
+  p_family_id UUID,
+  p_user_id UUID
+) RETURNS VOID AS $$
+DECLARE
+  v_total_remaining NUMERIC := 0;
+  v_env RECORD;
+BEGIN
+  -- Hitung total sisa saldo dari semua amplop yang punya saldo
+  FOR v_env IN
+    SELECT id, balance, name FROM public.envelopes
+    WHERE family_id = p_family_id AND balance > 0
+    FOR UPDATE
+  LOOP
+    v_total_remaining := v_total_remaining + v_env.balance;
+    
+    -- Nolkan saldo amplop
+    UPDATE public.envelopes SET balance = 0 WHERE id = v_env.id;
+  END LOOP;
+
+  IF v_total_remaining > 0 THEN
+    -- Kembalikan ke Kas Utama
+    UPDATE public.families
+    SET cash_pool_balance = cash_pool_balance + v_total_remaining
+    WHERE id = p_family_id;
+
+    -- Catat transaksi
+    INSERT INTO public.transactions (
+      family_id, profile_id, amount, type, description, source
+    ) VALUES (
+      p_family_id, p_user_id, v_total_remaining, 'INCOME', 'Tutup Buku Bulanan: Tarik semua sisa saldo amplop ke Kas Utama', 'APP'
+    );
+  END IF;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Fungsi untuk tutup buku bulanan: memindahkan sisa saldo ke amplop Tabungan
+CREATE OR REPLACE FUNCTION public.close_book_savings(
+  p_family_id UUID,
+  p_user_id UUID,
+  p_savings_envelope_id UUID
+) RETURNS VOID AS $$
+DECLARE
+  v_env RECORD;
+  v_target_name TEXT;
+BEGIN
+  -- Pastikan target valid
+  SELECT name INTO v_target_name FROM public.envelopes WHERE id = p_savings_envelope_id AND family_id = p_family_id FOR UPDATE;
+  
+  IF v_target_name IS NULL THEN
+    RAISE EXCEPTION 'Amplop tabungan tujuan tidak ditemukan';
+  END IF;
+
+  FOR v_env IN
+    SELECT id, balance, name FROM public.envelopes
+    WHERE family_id = p_family_id AND balance > 0 AND id != p_savings_envelope_id
+    FOR UPDATE
+  LOOP
+    -- Pindahkan saldo
+    UPDATE public.envelopes SET balance = balance + v_env.balance WHERE id = p_savings_envelope_id;
+    UPDATE public.envelopes SET balance = 0 WHERE id = v_env.id;
+
+    -- Catat transaksi
+    INSERT INTO public.transactions (
+      family_id, profile_id, envelope_id, source_envelope_id, amount, type, description, source
+    ) VALUES (
+      p_family_id, p_user_id, p_savings_envelope_id, v_env.id, v_env.balance, 'TRANSFER', 'Tutup Buku Bulanan: Pindahan sisa saldo dari ' || v_env.name || ' ke Tabungan ' || v_target_name, 'APP'
+    );
+  END LOOP;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;
+
+-- Fungsi untuk menghapus amplop dan merealokasikan dananya secara atomik
+CREATE OR REPLACE FUNCTION public.delete_envelope_and_reallocate(
+  p_family_id UUID,
+  p_user_id UUID,
+  p_envelope_id UUID,
+  p_reallocate_to_id UUID
+) RETURNS VOID AS $$
+DECLARE
+  v_balance NUMERIC;
+  v_name TEXT;
+BEGIN
+  -- Kunci dan ambil info amplop yang akan dihapus
+  SELECT balance, name INTO v_balance, v_name
+  FROM public.envelopes
+  WHERE id = p_envelope_id AND family_id = p_family_id
+  FOR UPDATE;
+
+  IF v_name IS NULL THEN
+    RAISE EXCEPTION 'Amplop tidak ditemukan';
+  END IF;
+
+  IF v_balance > 0 THEN
+    IF p_reallocate_to_id IS NOT NULL THEN
+      -- Pindahkan ke amplop lain
+      UPDATE public.envelopes SET balance = balance + v_balance WHERE id = p_reallocate_to_id AND family_id = p_family_id;
+      
+      INSERT INTO public.transactions (
+        family_id, profile_id, envelope_id, source_envelope_id, amount, type, description, source
+      ) VALUES (
+        p_family_id, p_user_id, p_reallocate_to_id, p_envelope_id, v_balance, 'TRANSFER', 'Realokasi saldo dari penghapusan amplop ' || v_name, 'APP'
+      );
+    ELSE
+      -- Kembalikan ke Kas Utama
+      UPDATE public.families SET cash_pool_balance = cash_pool_balance + v_balance WHERE id = p_family_id;
+      
+      INSERT INTO public.transactions (
+        family_id, profile_id, amount, type, description, source
+      ) VALUES (
+        p_family_id, p_user_id, v_balance, 'INCOME', 'Pengembalian sisa dana dari penghapusan amplop ' || v_name || ' ke Kas Utama', 'APP'
+      );
+    END IF;
+  END IF;
+
+  -- Hapus amplop (transaksi sebelumnya tetap tercatat, source_envelope_id akan jadi NULL kalau ON DELETE SET NULL)
+  DELETE FROM public.envelopes WHERE id = p_envelope_id;
+END;
+$$ LANGUAGE plpgsql SECURITY DEFINER;

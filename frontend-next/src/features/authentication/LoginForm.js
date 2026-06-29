@@ -29,7 +29,13 @@ export default function LoginForm() {
         setError(res.error);
         setIsLoading(false);
       } else if (res && res.success) {
-        window.location.href = "/dashboard";
+        if (res.requiresEmailConfirmation) {
+          setError("Pendaftaran berhasil! Silakan cek email Anda untuk verifikasi, lalu masuk.");
+          setIsLoginMode(true);
+          setIsLoading(false);
+        } else {
+          window.location.href = "/dashboard";
+        }
       }
     } catch (err) {
       setError(err.message || "Terjadi kesalahan sistem.");

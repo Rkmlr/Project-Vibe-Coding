@@ -137,82 +137,15 @@ export async function DELETE(request, { params }) {
     const { reallocateToId } = body;
 
     // Call RPC to handle complex deletion logic safely
-    // Actually, we didn't create an RPC for delete envelope, so we will do it here.
-    // 1. Get the envelope's current balance
-    const { data: envelope, error: fetchError } = await supabase
-      .from("envelopes")
-      .select("balance, name")
-      .eq("id", id)
-      .single();
+    const { error: rpcError } = await supabase.rpc("delete_envelope_and_reallocate", {
+      p_family_id: profile.family_id,
+      p_user_id: user.id,
+      p_envelope_id: id,
+      p_reallocate_to_id: reallocateToId || null
+    });
 
-    if (fetchError || !envelope) {
-       return NextResponse.json({ error: "Amplop tidak ditemukan." }, { status: 404 });
-    }
-
-    const balanceToMove = parseFloat(envelope.balance);
-
-    if (balanceToMove > 0) {
-      if (reallocateToId) {
-        // Reallocate to another envelope
-        const { data: targetEnv, error: targetError } = await supabase
-          .from("envelopes")
-          .select("balance, name")
-          .eq("id", reallocateToId)
-          .single();
-
-        if (targetError) throw new Error("Amplop target realokasi tidak ditemukan.");
-
-        // Update target envelope balance
-        await supabase
-          .from("envelopes")
-          .update({ balance: parseFloat(targetEnv.balance) + balanceToMove })
-          .eq("id", reallocateToId);
-
-        // Record transfer transaction
-        await supabase.from("transactions").insert({
-          family_id: profile.family_id,
-          envelope_id: reallocateToId,
-          source_envelope_id: id,
-          amount: balanceToMove,
-          type: "TRANSFER",
-          description: `Realokasi saldo dari penghapusan amplop '${envelope.name}'`,
-          source: "APP",
-        });
-      } else {
-        // Return to Cash Pool (Default)
-        const { data: family, error: familyError } = await supabase
-          .from("families")
-          .select("cash_pool_balance")
-          .eq("id", profile.family_id)
-          .single();
-
-        if (familyError) throw new Error("Grup keluarga tidak ditemukan.");
-
-        // Add back to family cash pool
-        await supabase
-          .from("families")
-          .update({ cash_pool_balance: parseFloat(family.cash_pool_balance) + balanceToMove })
-          .eq("id", profile.family_id);
-
-        // Record income transaction to Cash Pool
-        await supabase.from("transactions").insert({
-          family_id: profile.family_id,
-          amount: balanceToMove,
-          type: "INCOME",
-          description: `Pengembalian sisa dana dari penghapusan amplop '${envelope.name}' ke Kas Utama`,
-          source: "APP",
-        });
-      }
-    }
-
-    // 2. Delete the envelope
-    const { error: deleteError } = await supabase
-      .from("envelopes")
-      .delete()
-      .eq("id", id);
-
-    if (deleteError) {
-       return NextResponse.json({ error: deleteError.message }, { status: 400 });
+    if (rpcError) {
+       return NextResponse.json({ error: `Gagal menghapus amplop: ${rpcError.message}` }, { status: 400 });
     }
 
     // 3. Log Audit
@@ -221,7 +154,7 @@ export async function DELETE(request, { params }) {
       profile_id: user.id,
       action: "DELETE_ENVELOPES",
       target_table: "envelopes",
-      old_values: { ...envelope, _description: `Menghapus amplop: ${envelope.name}` },
+      old_values: { id, _description: `Menghapus amplop dengan ID ${id}` },
       new_values: null,
     });
 
