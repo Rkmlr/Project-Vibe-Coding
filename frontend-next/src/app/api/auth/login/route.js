@@ -3,8 +3,33 @@ import { createApiClient } from '@/lib/supabase/apiClient';
 import { loginUser } from '@/services/authService';
 
 /**
- * POST /api/auth/login
- * Melakukan sign in pengguna.
+ * @swagger
+ * /api/auth/login:
+ *   post:
+ *     summary: Login pengguna
+ *     description: Melakukan sign in pengguna menggunakan email dan password.
+ *     tags:
+ *       - Authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: budi@email.com
+ *               password:
+ *                 type: string
+ *                 example: rahasia123
+ *     responses:
+ *       200:
+ *         description: Login sukses
+ *       401:
+ *         description: Kredensial salah
+ *       500:
+ *         description: Internal server error
  */
 export async function POST(request) {
   try {
