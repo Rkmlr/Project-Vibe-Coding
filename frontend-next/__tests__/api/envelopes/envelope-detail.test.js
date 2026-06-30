@@ -3,15 +3,17 @@ import { GET, PUT, DELETE } from '@/app/api/envelopes/[id]/route';
 import { createMockRequest } from '../../helpers/requestMock';
 import { createMockSupabase } from '../../helpers/supabaseMock';
 
-const mockSupabase = createMockSupabase();
+let mockSupabase;
 
-vi.mock('@/utils/supabase/api', () => ({
+// Update path sesuai lokasi baru Database Layer.
+vi.mock('@/lib/supabase/apiClient', () => ({
   createApiClient: vi.fn().mockImplementation(() => Promise.resolve(mockSupabase)),
 }));
 
 describe('Envelope Detail API Route', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSupabase = createMockSupabase();
   });
 
   describe('GET', () => {
@@ -94,21 +96,22 @@ describe('Envelope Detail API Route', () => {
         error: null,
       });
       const queryBuilderMock = mockSupabase.from();
-      // Profile check
+      // 1. getProfileById → admin profile
       queryBuilderMock.single.mockResolvedValueOnce({
         data: { role: 'admin', family_id: 'fam-123' },
         error: null
       });
-      // Fetch old data
+      // 2. repoGetEnvelopeById → old envelope data
       queryBuilderMock.single.mockResolvedValueOnce({
-        data: { id: 'env-123', name: 'Makan', family_id: 'fam-123', limit_amount: 1000 },
+        data: { id: 'env-123', name: 'Makan', family_id: 'fam-123', limit_amount: 1000, category: 'NEEDS' },
         error: null
       });
-      // Update envelope query
+      // 3. repoUpdateEnvelope → updated envelope
       queryBuilderMock.single.mockResolvedValueOnce({
-        data: { id: 'env-123', name: 'Makan Baru', family_id: 'fam-123', limit_amount: 1000 },
+        data: { id: 'env-123', name: 'Makan Baru', family_id: 'fam-123', limit_amount: 1000, category: 'NEEDS' },
         error: null
       });
+      // 4. insertAuditLog → uses insert(), not single() — default mock is sufficient
 
       const req = createMockRequest({
         method: 'PUT',
@@ -120,6 +123,7 @@ describe('Envelope Detail API Route', () => {
       expect(body.success).toBe(true);
       expect(body.data.name).toBe('Makan Baru');
     });
+
   });
 
   describe('DELETE', () => {

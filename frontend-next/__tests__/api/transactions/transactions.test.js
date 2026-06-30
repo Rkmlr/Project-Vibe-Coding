@@ -3,15 +3,16 @@ import { GET, POST } from '@/app/api/transactions/route';
 import { createMockRequest } from '../../helpers/requestMock';
 import { createMockSupabase } from '../../helpers/supabaseMock';
 
-const mockSupabase = createMockSupabase();
+let mockSupabase;
 
-vi.mock('@/utils/supabase/api', () => ({
+vi.mock('@/lib/supabase/apiClient', () => ({
   createApiClient: vi.fn().mockImplementation(() => Promise.resolve(mockSupabase)),
 }));
 
 describe('Transactions Main Route', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSupabase = createMockSupabase();
   });
 
   describe('GET', () => {

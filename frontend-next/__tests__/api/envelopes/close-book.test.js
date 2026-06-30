@@ -5,7 +5,8 @@ import { createMockSupabase } from '../../helpers/supabaseMock';
 
 const mockSupabase = createMockSupabase();
 
-vi.mock('@/utils/supabase/api', () => ({
+// Update path sesuai lokasi baru Database Layer.
+vi.mock('@/lib/supabase/apiClient', () => ({
   createApiClient: vi.fn().mockImplementation(() => Promise.resolve(mockSupabase)),
 }));
 
@@ -32,7 +33,7 @@ describe('Close Book API Route', () => {
     const response = await POST(req);
     expect(response.status).toBe(403);
     const body = await response.json();
-    expect(body.error).toBe('Only admins can close book');
+    expect(body.error).toBe('Hanya admin yang dapat menutup buku.');
   });
 
   it('should successfully sweep balance to cash pool', async () => {

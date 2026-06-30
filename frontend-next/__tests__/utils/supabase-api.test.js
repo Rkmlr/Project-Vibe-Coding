@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createApiClient } from '@/utils/supabase/api';
+import { createApiClient } from '@/lib/supabase/apiClient';
 import { createMockRequest } from '../helpers/requestMock';
 import { createServerClient } from '@supabase/ssr';
 import { createClient as createJSClient } from '@supabase/supabase-js';

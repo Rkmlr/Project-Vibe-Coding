@@ -1,20 +1,26 @@
-import { NextResponse } from "next/server";
-import { createApiClient } from "@/utils/supabase/api";
+import { NextResponse } from 'next/server';
+import { createApiClient } from '@/lib/supabase/apiClient';
+import { logoutUser } from '@/services/authService';
 
+/**
+ * POST /api/auth/logout
+ * Melakukan sign out pengguna.
+ */
 export async function POST(request) {
   try {
     const supabase = await createApiClient(request);
-    
-    // This will clear the HTTP-Only cookies if accessed via Web, 
-    // or invalidate the session if accessed via Mobile.
-    const { error } = await supabase.auth.signOut();
+    const result = await logoutUser(supabase);
 
-    if (error) {
-      return NextResponse.json({ error: error.message }, { status: 500 });
+    if (result.error) {
+      return NextResponse.json({ error: result.error }, { status: result.status ?? 500 });
     }
 
-    return NextResponse.json({ success: true, message: "Logged out successfully" }, { status: 200 });
+    return NextResponse.json({
+      success: true,
+      message: result.message
+    }, { status: 200 });
+
   } catch (err) {
-    return NextResponse.json({ error: err.message || "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: err.message || 'Internal server error' }, { status: 500 });
   }
 }

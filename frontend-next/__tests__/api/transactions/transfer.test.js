@@ -3,15 +3,16 @@ import { POST } from '@/app/api/transactions/transfer/route';
 import { createMockRequest } from '../../helpers/requestMock';
 import { createMockSupabase } from '../../helpers/supabaseMock';
 
-const mockSupabase = createMockSupabase();
+let mockSupabase;
 
-vi.mock('@/utils/supabase/api', () => ({
+vi.mock('@/lib/supabase/apiClient', () => ({
   createApiClient: vi.fn().mockImplementation(() => Promise.resolve(mockSupabase)),
 }));
 
 describe('Transactions Transfer API Route', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSupabase = createMockSupabase();
   });
 
   it('should return 403 if non-admin tries to transfer funds', async () => {

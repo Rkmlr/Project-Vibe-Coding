@@ -1,54 +1,32 @@
-import { NextResponse } from "next/server";
-import { createApiClient } from "@/utils/supabase/api";
+import { NextResponse } from 'next/server';
+import { createApiClient } from '@/lib/supabase/apiClient';
+import { getCurrentUser } from '@/services/authService';
 
+/**
+ * GET /api/auth/me
+ * Mengambil detail profil user yang sedang login beserta data keluarganya.
+ */
 export async function GET(request) {
   try {
     const supabase = await createApiClient(request);
-    
-    // 1. Validate session
     const { data: { user }, error: authError } = await supabase.auth.getUser();
 
     if (authError || !user) {
-      return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
+      return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    // 2. Fetch user profile
-    const { data: profile, error: profileError } = await supabase
-      .from("profiles")
-      .select("display_name, family_id, role")
-      .eq("id", user.id)
-      .single();
+    const result = await getCurrentUser(supabase, user.id, user.email);
 
-    if (profileError || !profile) {
-      return NextResponse.json({ error: "Profile not found" }, { status: 404 });
+    if (result.error) {
+      return NextResponse.json({ error: result.error }, { status: result.status ?? 400 });
     }
 
-    let family = null;
-    
-    // 3. Fetch family details if linked
-    if (profile.family_id) {
-      const { data: familyData } = await supabase
-        .from("families")
-        .select("name, invite_code, cash_pool_balance")
-        .eq("id", profile.family_id)
-        .single();
-        
-      if (familyData) {
-        family = familyData;
-      }
-    }
-
-    return NextResponse.json({ 
-      success: true, 
-      user: {
-        id: user.id,
-        email: user.email,
-        ...profile,
-        family
-      } 
+    return NextResponse.json({
+      success: true,
+      user: result.data
     }, { status: 200 });
 
   } catch (err) {
-    return NextResponse.json({ error: err.message || "Internal server error" }, { status: 500 });
+    return NextResponse.json({ error: err.message || 'Internal server error' }, { status: 500 });
   }
 }

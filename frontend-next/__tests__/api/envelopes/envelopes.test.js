@@ -5,7 +5,10 @@ import { createMockSupabase } from '../../helpers/supabaseMock';
 
 let mockSupabase;
 
-vi.mock('@/utils/supabase/api', () => ({
+// Update path sesuai lokasi baru Database Layer.
+// Test ini adalah integration test ringan: memvalidasi bahwa
+// API route merespons dengan status code yang benar (route → service chain).
+vi.mock('@/lib/supabase/apiClient', () => ({
   createApiClient: vi.fn().mockImplementation(() => Promise.resolve(mockSupabase)),
 }));
 
@@ -44,7 +47,7 @@ describe('Envelopes Main Route', () => {
       const response = await GET(req);
       expect(response.status).toBe(404);
       const body = await response.json();
-      expect(body.error).toBe('No family associated with this user');
+      expect(body.error).toBe('Pengguna belum tergabung dalam keluarga.');
     });
 
     it('should return list of envelopes for authenticated user with family', async () => {
@@ -102,7 +105,7 @@ describe('Envelopes Main Route', () => {
       const response = await POST(req);
       expect(response.status).toBe(403);
       const body = await response.json();
-      expect(body.error).toBe('Only admins can create envelopes');
+      expect(body.error).toBe('Hanya admin yang dapat membuat amplop.');
     });
 
     it('should return 201 on successful envelope creation by admin', async () => {

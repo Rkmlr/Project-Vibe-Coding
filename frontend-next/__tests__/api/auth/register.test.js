@@ -3,9 +3,9 @@ import { POST } from '@/app/api/auth/register/route';
 import { createMockRequest } from '../../helpers/requestMock';
 import { createMockSupabase } from '../../helpers/supabaseMock';
 
-const mockSupabase = createMockSupabase();
+let mockSupabase;
 
-vi.mock('@/utils/supabase/api', () => ({
+vi.mock('@/lib/supabase/apiClient', () => ({
   createApiClient: vi.fn().mockImplementation(() => Promise.resolve(mockSupabase)),
 }));
 
@@ -18,6 +18,7 @@ vi.mock('@/utils/rate-limit', () => ({
 describe('Register API Endpoint', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSupabase = createMockSupabase();
     mockRateLimit.mockReturnValue(true);
   });
 

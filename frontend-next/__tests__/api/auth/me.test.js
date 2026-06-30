@@ -3,15 +3,16 @@ import { GET } from '@/app/api/auth/me/route';
 import { createMockRequest } from '../../helpers/requestMock';
 import { createMockSupabase } from '../../helpers/supabaseMock';
 
-const mockSupabase = createMockSupabase();
+let mockSupabase;
 
-vi.mock('@/utils/supabase/api', () => ({
+vi.mock('@/lib/supabase/apiClient', () => ({
   createApiClient: vi.fn().mockImplementation(() => Promise.resolve(mockSupabase)),
 }));
 
 describe('Me API Endpoint', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    mockSupabase = createMockSupabase();
   });
 
   it('should return 401 if user is not authenticated', async () => {

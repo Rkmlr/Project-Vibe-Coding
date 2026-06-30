@@ -5,7 +5,7 @@ import { createMockSupabase } from '../../helpers/supabaseMock';
 
 let mockSupabase;
 
-vi.mock('@/utils/supabase/api', () => ({
+vi.mock('@/lib/supabase/apiClient', () => ({
   createApiClient: vi.fn().mockImplementation(() => Promise.resolve(mockSupabase)),
 }));
 
