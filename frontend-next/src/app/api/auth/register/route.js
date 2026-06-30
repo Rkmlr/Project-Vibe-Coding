@@ -4,8 +4,45 @@ import { registerUser } from '@/services/authService';
 import { rateLimit } from '@/utils/rate-limit';
 
 /**
- * POST /api/auth/register
- * Mendaftarkan user baru dan menghubungkannya dengan keluarga (create/join).
+ * @swagger
+ * /api/auth/register:
+ *   post:
+ *     summary: Mendaftarkan user baru
+ *     description: Mendaftarkan user baru dan menghubungkannya dengan keluarga (mode create atau join).
+ *     tags:
+ *       - Authentication
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *                 example: budi@email.com
+ *               password:
+ *                 type: string
+ *                 example: rahasia123
+ *               displayName:
+ *                 type: string
+ *                 example: Ayah
+ *               mode:
+ *                 type: string
+ *                 example: create
+ *               familyName:
+ *                 type: string
+ *                 example: Keluarga Budi
+ *               inviteCode:
+ *                 type: string
+ *                 example: ABC123XYZ
+ *     responses:
+ *       201:
+ *         description: Registrasi berhasil
+ *       400:
+ *         description: Input tidak valid
+ *       429:
+ *         description: Terlalu banyak request (Rate limit)
  */
 export async function POST(request) {
   try {
