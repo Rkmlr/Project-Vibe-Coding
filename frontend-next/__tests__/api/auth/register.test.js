@@ -173,4 +173,39 @@ describe('Register API Endpoint', () => {
     const body = await response.json();
     expect(body.error).toBe('Gagal bergabung: Invalid invite code');
   });
+
+  it('should handle registration with 300 characters displayName and familyName', async () => {
+    mockSupabase.auth.signUp.mockResolvedValueOnce({
+      data: { session: { access_token: 'valid_token' } },
+      error: null,
+    });
+    mockSupabase.rpc.mockResolvedValueOnce({ error: null });
+
+    const longString = 'A'.repeat(300);
+    const req = createMockRequest({
+      method: 'POST',
+      body: { 
+        email: 'long@example.com', 
+        password: 'password123', 
+        displayName: longString, 
+        mode: 'create', 
+        familyName: longString 
+      },
+    });
+
+    const res = await POST(req);
+    const json = await res.json();
+
+    expect(res.status).toBe(201);
+    expect(json.success).toBe(true);
+    expect(mockSupabase.auth.signUp).toHaveBeenCalledWith(
+      expect.objectContaining({
+        options: {
+          data: {
+            display_name: longString,
+          },
+        },
+      })
+    );
+  });
 });
