@@ -1,10 +1,10 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { login, logout, signup } from '@/actions/authActions';
+import { login, logout, signup } from '@/api-clients/authClient';
 
 // Mock global fetch
 global.fetch = vi.fn();
 
-describe('authActions', () => {
+describe('authClient', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

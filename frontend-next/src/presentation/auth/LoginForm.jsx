@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { login, signup } from "@/actions/authActions";
+import { login, signup } from "@/api-clients/authClient";
 
 export default function LoginForm() {
   const [isLoginMode, setIsLoginMode] = useState(true);

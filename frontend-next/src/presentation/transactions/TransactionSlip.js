@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { addTransaction } from "@/actions/transactionActions";
+import { addTransaction } from "@/api-clients/transactionClient";
 
 export default function TransactionSlip({ envelopes = [], role = "member", onTransactionSuccess }) {
   const [txType, setTxType] = useState("EXPENSE"); // EXPENSE or INCOME

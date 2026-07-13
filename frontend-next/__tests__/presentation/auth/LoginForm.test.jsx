@@ -3,10 +3,10 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import LoginForm from '@/presentation/auth/LoginForm';
-import { login, signup } from '@/actions/authActions';
+import { login, signup } from '@/api-clients/authClient';
 
 // Mock server actions
-vi.mock('@/actions/authActions', () => ({
+vi.mock('@/api-clients/authClient', () => ({
   login: vi.fn(),
   signup: vi.fn(),
 }));

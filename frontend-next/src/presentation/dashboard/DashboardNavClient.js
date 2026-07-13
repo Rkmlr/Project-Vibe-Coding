@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { useState, useEffect } from "react";
 import { usePathname } from "next/navigation";
-import { logout } from "@/actions/authActions";
+import { logout } from "@/api-clients/authClient";
 
 export default function DashboardNavClient({ profile }) {
   const pathname = usePathname();

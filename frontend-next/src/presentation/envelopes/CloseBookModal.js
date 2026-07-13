@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { closeMonthlyBook } from "@/actions/envelopeActions";
+import { closeMonthlyBook } from "@/api-clients/envelopeClient";
 
 export default function CloseBookModal({
   isOpen,

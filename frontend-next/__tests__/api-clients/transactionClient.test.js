@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { addTransaction, transferBalance } from '@/actions/transactionActions';
+import { addTransaction, transferBalance } from '@/api-clients/transactionClient';
 
 global.fetch = vi.fn();
 
-describe('transactionActions', () => {
+describe('transactionClient', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });

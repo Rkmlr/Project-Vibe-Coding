@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { transferBalance } from "@/actions/transactionActions";
+import { transferBalance } from "@/api-clients/transactionClient";
 
 export default function TransferModal({
   isOpen,

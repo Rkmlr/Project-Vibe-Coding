@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { createEnvelope, updateEnvelope, deleteEnvelope } from "@/actions/envelopeActions";
+import { createEnvelope, updateEnvelope, deleteEnvelope } from "@/api-clients/envelopeClient";
 
 export default function ManageEnvelopeModal({
   isOpen,

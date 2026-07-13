@@ -3,9 +3,9 @@ import { render, screen, fireEvent, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import TransferModal from '@/presentation/envelopes/TransferModal';
-import { transferBalance } from '@/actions/transactionActions';
+import { transferBalance } from '@/api-clients/transactionClient';
 
-vi.mock('@/actions/transactionActions', () => ({
+vi.mock('@/api-clients/transactionClient', () => ({
   transferBalance: vi.fn(),
 }));
 

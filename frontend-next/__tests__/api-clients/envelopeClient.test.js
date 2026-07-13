@@ -1,9 +1,9 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { createEnvelope, updateEnvelope, deleteEnvelope, closeMonthlyBook } from '@/actions/envelopeActions';
+import { createEnvelope, updateEnvelope, deleteEnvelope, closeMonthlyBook } from '@/api-clients/envelopeClient';
 
 global.fetch = vi.fn();
 
-describe('envelopeActions', () => {
+describe('envelopeClient', () => {
   beforeEach(() => {
     vi.clearAllMocks();
   });
