@@ -1,4 +1,10 @@
 /**
+ * API CLIENT — Envelope Client
+ *
+ * Client-side helper functions wrapping envelope API endpoints.
+ */
+
+/**
  * Create a new envelope
  */
 export async function createEnvelope(name, limitAmount, category, assignedTo = null) {

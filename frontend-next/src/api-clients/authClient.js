@@ -1,4 +1,10 @@
 /**
+ * API CLIENT — Auth Client
+ *
+ * Client-side helper functions wrapping authentication API endpoints.
+ */
+
+/**
  * Login user
  */
 export async function login(formData) {
@@ -25,9 +31,6 @@ export async function login(formData) {
 export async function logout() {
   try {
     await fetch('/api/auth/logout', { method: 'POST' });
-    // Note: redirect('/') cannot be used directly in a generic fetch utility unless triggered by a form or handled in a client component using next/navigation router.
-    // It's safer for the caller to redirect if this is no longer a Server Action.
-    // However, if we leave it to the caller, we just return success.
     return { success: true };
   } catch (err) {
     return { error: err.message };

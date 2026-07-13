@@ -1,4 +1,10 @@
 /**
+ * API CLIENT — Transaction Client
+ *
+ * Client-side helper functions wrapping transaction API endpoints.
+ */
+
+/**
  * Add a new transaction (Income or Expense)
  */
 export async function addTransaction(payload) {
