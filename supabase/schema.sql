@@ -234,14 +234,24 @@ CREATE POLICY admin_update_family ON public.families
 
 -- C. Kebijakan Keamanan untuk Tabel `envelopes`
 CREATE POLICY select_family_envelopes ON public.envelopes 
-    FOR SELECT USING (family_id = public.get_user_family_id() AND (public.is_user_admin() OR assigned_to IS NULL OR assigned_to = auth.uid()));
+    FOR SELECT USING (family_id = public.get_user_family_id() AND (public.is_user_admin() OR assigned_to = auth.uid()));
 
 CREATE POLICY admin_manage_envelopes ON public.envelopes 
     FOR ALL USING (family_id = public.get_user_family_id() AND public.is_user_admin());
 
 -- D. Kebijakan Keamanan untuk Tabel `transactions`
 CREATE POLICY select_family_transactions ON public.transactions 
-    FOR SELECT USING (family_id = public.get_user_family_id());
+    FOR SELECT USING (
+        family_id = public.get_user_family_id() AND 
+        (
+            public.is_user_admin() OR 
+            profile_id = auth.uid() OR 
+            envelope_id IN (
+                SELECT id FROM public.envelopes 
+                WHERE assigned_to = auth.uid()
+            )
+        )
+    );
 
 CREATE POLICY insert_family_transactions ON public.transactions 
     FOR INSERT WITH CHECK (family_id = public.get_user_family_id() AND profile_id = auth.uid());
@@ -319,6 +329,37 @@ DECLARE
   v_envelope_balance NUMERIC;
   v_cash_pool_balance NUMERIC;
 BEGIN
+  -- Keamanan & Otorisasi
+  IF p_family_id != public.get_user_family_id() THEN
+    RAISE EXCEPTION 'Akses tidak sah untuk keluarga ini.';
+  END IF;
+
+  IF p_user_id != auth.uid() THEN
+    RAISE EXCEPTION 'User ID tidak cocok dengan sesi aktif.';
+  END IF;
+
+  IF p_type = 'INCOME' AND NOT public.is_user_admin() THEN
+    RAISE EXCEPTION 'Hanya pengelola (admin) yang dapat mencatat pemasukan.';
+  END IF;
+
+  IF p_type = 'EXPENSE' AND p_envelope_id IS NOT NULL THEN
+    -- Pastikan amplop milik keluarga ini
+    IF NOT EXISTS (
+      SELECT 1 FROM public.envelopes 
+      WHERE id = p_envelope_id AND family_id = p_family_id
+    ) THEN
+      RAISE EXCEPTION 'Amplop tidak ditemukan di grup keluarga Anda.';
+    END IF;
+
+    -- Jika bukan admin, pastikan amplop ditugaskan ke user bersangkutan
+    IF NOT public.is_user_admin() AND NOT EXISTS (
+      SELECT 1 FROM public.envelopes 
+      WHERE id = p_envelope_id AND assigned_to = auth.uid()
+    ) THEN
+      RAISE EXCEPTION 'Anda tidak memiliki wewenang untuk menggunakan amplop ini.';
+    END IF;
+  END IF;
+
   -- Validasi jumlah
   IF p_amount <= 0 THEN
     RAISE EXCEPTION 'Nominal harus lebih dari 0';
@@ -396,6 +437,19 @@ DECLARE
   v_to_balance NUMERIC;
   v_cash_pool_balance NUMERIC;
 BEGIN
+  -- Keamanan & Otorisasi
+  IF p_family_id != public.get_user_family_id() THEN
+    RAISE EXCEPTION 'Akses tidak sah untuk keluarga ini.';
+  END IF;
+
+  IF p_user_id != auth.uid() THEN
+    RAISE EXCEPTION 'User ID tidak cocok dengan sesi aktif.';
+  END IF;
+
+  IF NOT public.is_user_admin() THEN
+    RAISE EXCEPTION 'Hanya pengelola (admin) yang dapat memindahkan dana.';
+  END IF;
+
   -- Validasi jumlah
   IF p_amount <= 0 THEN
     RAISE EXCEPTION 'Nominal harus lebih dari 0';
@@ -484,6 +538,19 @@ DECLARE
   v_total_remaining NUMERIC := 0;
   v_env RECORD;
 BEGIN
+  -- Keamanan & Otorisasi
+  IF p_family_id != public.get_user_family_id() THEN
+    RAISE EXCEPTION 'Akses tidak sah untuk keluarga ini.';
+  END IF;
+
+  IF p_user_id != auth.uid() THEN
+    RAISE EXCEPTION 'User ID tidak cocok dengan sesi aktif.';
+  END IF;
+
+  IF NOT public.is_user_admin() THEN
+    RAISE EXCEPTION 'Hanya pengelola (admin) yang dapat menutup buku bulanan.';
+  END IF;
+
   -- Hitung total sisa saldo dari semua amplop yang punya saldo
   FOR v_env IN
     SELECT id, balance, name FROM public.envelopes
@@ -522,6 +589,19 @@ DECLARE
   v_env RECORD;
   v_target_name TEXT;
 BEGIN
+  -- Keamanan & Otorisasi
+  IF p_family_id != public.get_user_family_id() THEN
+    RAISE EXCEPTION 'Akses tidak sah untuk keluarga ini.';
+  END IF;
+
+  IF p_user_id != auth.uid() THEN
+    RAISE EXCEPTION 'User ID tidak cocok dengan sesi aktif.';
+  END IF;
+
+  IF NOT public.is_user_admin() THEN
+    RAISE EXCEPTION 'Hanya pengelola (admin) yang dapat menutup buku bulanan.';
+  END IF;
+
   -- Pastikan target valid
   SELECT name INTO v_target_name FROM public.envelopes WHERE id = p_savings_envelope_id AND family_id = p_family_id FOR UPDATE;
   
@@ -559,6 +639,19 @@ DECLARE
   v_balance NUMERIC;
   v_name TEXT;
 BEGIN
+  -- Keamanan & Otorisasi
+  IF p_family_id != public.get_user_family_id() THEN
+    RAISE EXCEPTION 'Akses tidak sah untuk keluarga ini.';
+  END IF;
+
+  IF p_user_id != auth.uid() THEN
+    RAISE EXCEPTION 'User ID tidak cocok dengan sesi aktif.';
+  END IF;
+
+  IF NOT public.is_user_admin() THEN
+    RAISE EXCEPTION 'Hanya pengelola (admin) yang dapat menghapus amplop.';
+  END IF;
+
   -- Kunci dan ambil info amplop yang akan dihapus
   SELECT balance, name INTO v_balance, v_name
   FROM public.envelopes
