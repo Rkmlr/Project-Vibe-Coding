@@ -50,7 +50,12 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Terlalu banyak permintaan, coba lagi nanti.' }, { status: 429 });
     }
 
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: 'Request body tidak valid atau kosong' }, { status: 400 });
+    }
     const { email, password, displayName, mode, familyName, inviteCode } = body;
 
     const supabase = await createApiClient(request);

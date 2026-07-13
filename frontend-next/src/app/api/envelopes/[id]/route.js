@@ -46,7 +46,12 @@ export async function PUT(request, { params }) {
     const { id } = await params;
 
     // Ekstrak data murni dari request, lalu lempar ke service
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: 'Request body tidak valid atau kosong' }, { status: 400 });
+    }
     const { name, category, limit_amount } = body;
 
     const result = await updateEnvelope(supabase, user.id, id, {
@@ -84,9 +89,14 @@ export async function DELETE(request, { params }) {
 
     const { id } = await params;
 
-    // Ekstrak data murni dari request body
-    const body = await request.json();
-    const { reallocateToId } = body;
+    // Ekstrak data murni dari request body (opsional)
+    let reallocateToId = null;
+    try {
+      const body = await request.json();
+      reallocateToId = body?.reallocateToId || null;
+    } catch {
+      // Abaikan jika body kosong atau tidak valid karena parameter opsional
+    }
 
     const result = await deleteEnvelope(supabase, user.id, id, reallocateToId);
 

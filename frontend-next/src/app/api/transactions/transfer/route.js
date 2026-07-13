@@ -15,7 +15,12 @@ export async function POST(request) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
 
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: 'Request body tidak valid atau kosong' }, { status: 400 });
+    }
     const { from_envelope_id, to_envelope_id, amount, description } = body;
 
     const result = await transferFunds(supabase, user.id, {

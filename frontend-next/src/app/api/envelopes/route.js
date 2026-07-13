@@ -42,7 +42,12 @@ export async function POST(request) {
     }
 
     // Ekstrak data murni dari request, lalu lempar ke service
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: 'Request body tidak valid atau kosong' }, { status: 400 });
+    }
     const { name, category, limit_amount, initial_balance } = body;
 
     const result = await createEnvelope(supabase, user.id, {

@@ -33,7 +33,12 @@ import { loginUser } from '@/services/authService';
  */
 export async function POST(request) {
   try {
-    const body = await request.json();
+    let body;
+    try {
+      body = await request.json();
+    } catch {
+      return NextResponse.json({ error: 'Request body tidak valid atau kosong' }, { status: 400 });
+    }
     const { email, password } = body;
 
     const supabase = await createApiClient(request);
